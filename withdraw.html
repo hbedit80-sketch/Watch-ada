@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Withdraw Funds</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: #0b0b0b;
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 450px;
+            padding: 0 20px 30px 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            align-items: center;
+            padding: 20px 0;
+            margin-bottom: 20px;
+        }
+
+        .back-btn {
+            color: #ffffff;
+            font-size: 18px;
+            text-decoration: none;
+            width: 30px;
+        }
+
+        .header h2 {
+            flex: 1;
+            font-size: 20px;
+            font-weight: 500;
+            text-align: center;
+            margin-right: 30px;
+        }
+
+        /* Balance Card */
+        .balance-card {
+            background: linear-gradient(135deg, #006699, #2196f3);
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .balance-label { font-size: 14px; opacity: 0.9; }
+        .balance-amount { font-size: 30px; font-weight: bold; margin-top: 5px; }
+
+        /* Form Styling */
+        .form-group { margin-bottom: 20px; }
+        label { display: block; font-size: 14px; color: #888; margin-bottom: 8px; margin-left: 5px; }
+
+        .input-wrapper {
+            background-color: #1a1a1a;
+            border-radius: 12px;
+            border: 1px solid #222;
+            display: flex;
+            align-items: center;
+            padding: 0 15px;
+        }
+
+        .input-wrapper i { color: #2196f3; width: 25px; }
+
+        .input-wrapper input, .input-wrapper select {
+            background: transparent;
+            border: none;
+            color: #fff;
+            padding: 15px 10px;
+            width: 100%;
+            font-size: 16px;
+            outline: none;
+        }
+
+        select option { background: #1a1a1a; }
+
+        .withdraw-btn {
+            background-color: #2196f3;
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+            box-shadow: 0 4px 10px rgba(33, 150, 243, 0.3);
+        }
+
+        .withdraw-btn:active { transform: scale(0.98); }
+
+        /* SweetAlert */
+        .swal2-popup { background: #1a1a1a !important; color: #fff !important; border-radius: 15px !important; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header">
+            <a href="index.html" class="back-btn">
+                <i class="fa-solid fa-arrow-left"></i>
+            </a>
+            <h2>Withdraw</h2>
+        </div>
+
+        <div class="balance-card">
+            <div class="balance-label">Available Balance</div>
+            <div class="balance-amount">0.12 £</div>
+        </div>
+
+        <div class="form-group">
+            <label>Select Country</label>
+            <div class="input-wrapper">
+                <i class="fa-solid fa-globe"></i>
+                <select id="countrySelect" onchange="updateMethods()">
+                    <option value="">Choose Country</option>
+                    <option value="NP">Nepal</option>
+                    <option value="IN">India</option>
+                    <option value="US">USA / Global</option>
+                    <option value="AE">UAE</option>
+                    <option value="SA">Saudi Arabia</option>
+                    <option value="MY">Malaysia</option>
+                    <option value="JP">Japan</option>
+                    <option value="EU">Europe</option>
+                    <option value="UK">United Kingdom</option>
+                    <option value="Crypto">Crypto (USDT)</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Withdrawal Method</label>
+            <div class="input-wrapper">
+                <i class="fa-solid fa-wallet"></i>
+                <select id="methodSelect">
+                    <option value="">Select country first</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Wallet Number / ID</label>
+            <div class="input-wrapper">
+                <i class="fa-solid fa-address-card"></i>
+                <input type="text" id="walletId" placeholder="Enter number or ID">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Withdraw Amount</label>
+            <div class="input-wrapper">
+                <i class="fa-solid fa-money-bill-transfer"></i>
+                <input type="number" id="amount" placeholder="0.00">
+            </div>
+        </div>
+
+        <button class="withdraw-btn" onclick="processWithdraw()">Submit Request</button>
+    </div>
+
+    <script>
+        const methods = {
+            "NP": ["eSewa", "Khalti", "IME Pay", "Bank Transfer"],
+            "IN": ["UPI (PhonePe/GPay)", "Paytm", "Bank Transfer"],
+            "US": ["PayPal", "CashApp", "Zelle"],
+            "AE": ["Botim Pay", "Bank Transfer"],
+            "SA": ["STC Pay", "Bank Transfer"],
+            "MY": ["Touch 'n Go", "GrabPay"],
+            "JP": ["Line Pay", "Rakuten Pay"],
+            "EU": ["Revolut", "SEPA Bank"],
+            "UK": ["Wise", "Bank Transfer"],
+            "Crypto": ["USDT (TRC20)", "Binance ID"]
+        };
+
+        function updateMethods() {
+            const country = document.getElementById('countrySelect').value;
+            const methodDropdown = document.getElementById('methodSelect');
+            methodDropdown.innerHTML = '';
+
+            if (country && methods[country]) {
+                methods[country].forEach(m => {
+                    let opt = document.createElement('option');
+                    opt.value = m;
+                    opt.innerHTML = m;
+                    methodDropdown.appendChild(opt);
+                });
+            } else {
+                methodDropdown.innerHTML = '<option>Select country first</option>';
+            }
+        }
+
+        function processWithdraw() {
+            const wallet = document.getElementById('walletId').value;
+            const amount = document.getElementById('amount').value;
+
+            const swalSmall = { width: '300px', background: '#1a1a1a', color: '#fff', confirmButtonColor: '#2196f3' };
+
+            if (!wallet || !amount) {
+                Swal.fire({ ...swalSmall, icon: 'error', title: 'Error', text: 'Fill all details!' });
+                return;
+            }
+
+            Swal.fire({
+                ...swalSmall,
+                icon: 'success',
+                title: 'Success',
+                text: 'Your request is being processed!',
+            }).then(() => {
+                window.location.href = "index.html";
+            });
+        }
+    </script>
+</body>
+</html>

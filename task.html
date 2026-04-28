@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Complete Tasks</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: #f4f7f9;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 450px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* --- Header & Back Button Styling --- */
+        .header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 25px;
+            gap: 15px;
+        }
+
+        .back-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background: #ffffff;
+            border-radius: 50%;
+            color: #333;
+            text-decoration: none;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: background 0.3s;
+        }
+
+        .back-btn:active {
+            background: #eef1f3;
+            transform: scale(0.95);
+        }
+
+        .header h2 {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+        /* ---------------------------------- */
+
+        .task-card {
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s;
+        }
+
+        .task-card:active {
+            transform: scale(0.98);
+        }
+
+        .task-icon {
+            width: 60px;
+            height: 60px;
+            background: #f8f9fa;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 15px;
+        }
+
+        .task-icon img {
+            width: 40px;
+            height: 40px;
+            object-fit: contain;
+        }
+
+        .task-info {
+            flex: 1;
+        }
+
+        .task-info h3 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .task-info p {
+            font-size: 13px;
+            color: #777;
+            line-height: 1.4;
+        }
+
+        .reward-tag {
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+            font-weight: bold;
+            color: #333;
+            margin-top: 5px;
+        }
+
+        .reward-tag img {
+            width: 18px;
+            margin-right: 5px;
+        }
+
+        .claim-btn {
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(76, 175, 80, 0.3);
+        }
+
+        .claim-btn.disabled {
+            background-color: #e0e0e0;
+            color: #999;
+            box-shadow: none;
+            cursor: not-allowed;
+        }
+
+        .swal2-popup {
+            border-radius: 20px !important;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header">
+            <a href="javascript:history.back()" class="back-btn">
+                <i class="fa-solid fa-arrow-left"></i>
+            </a>
+            <h2>Complete tasks & earn rewards</h2>
+        </div>
+
+        <div class="task-card">
+            <div class="task-icon"><img src="https://cdn-icons-png.flaticon.com/512/1043/1043431.png" alt="Luck"></div>
+            <div class="task-info">
+                <h3>Try Your Luck</h3>
+                <p>Open once daily & win 5,000 - 20,000 Points</p>
+            </div>
+            <button class="claim-btn" onclick="showAdAndClaim('Try Your Luck', 20)">Claim</button>
+        </div>
+
+        <div class="task-card">
+            <div class="task-icon"><img src="https://cdn-icons-png.flaticon.com/512/3100/3100566.png" alt="Water"></div>
+            <div class="task-info">
+                <h3>Drink Water</h3>
+                <p>Stay hydrated & earn 10,000 Points</p>
+                <div class="reward-tag"><img src="https://cdn-icons-png.flaticon.com/512/217/217853.png"> 10,000</div>
+            </div>
+            <button class="claim-btn" onclick="showAdAndClaim('Drink Water', 10000)">Claim</button>
+        </div>
+
+        <div class="task-card">
+            <div class="task-icon"><img src="https://cdn-icons-png.flaticon.com/512/3241/3241258.png" alt="Walk"></div>
+            <div class="task-info">
+                <h3>Walk 10 Minutes</h3>
+                <p>Walk daily & earn 10,000 Points</p>
+                <div class="reward-tag"><img src="https://cdn-icons-png.flaticon.com/512/217/217853.png"> 10,000</div>
+            </div>
+            <button class="claim-btn" onclick="showAdAndClaim('Walk 10 Minutes', 10000)">Claim</button>
+        </div>
+
+        <div class="task-card">
+            <div class="task-icon"><img src="https://cdn-icons-png.flaticon.com/512/2844/2844140.png" alt="Exercise"></div>
+            <div class="task-info">
+                <h3>Exercise 10 Minutes</h3>
+                <p>Next reward in 00:59:31</p>
+                <div class="reward-tag"><img src="https://cdn-icons-png.flaticon.com/512/217/217853.png"> 10,000</div>
+            </div>
+            <button class="claim-btn disabled">Claim</button>
+        </div>
+
+        <div class="task-card">
+            <div class="task-icon"><img src="https://cdn-icons-png.flaticon.com/512/1035/1035619.png" alt="Pray"></div>
+            <div class="task-info">
+                <h3>Pray 2 Minutes</h3>
+                <p>Pray & earn 20,000 Points</p>
+                <div class="reward-tag"><img src="https://cdn-icons-png.flaticon.com/512/217/217853.png"> 20,000</div>
+            </div>
+            <button class="claim-btn" onclick="showAdAndClaim('Pray 2 Minutes', 20000)">Claim</button>
+        </div>
+
+    </div>
+
+    <script>
+        function showAdAndClaim(taskName, points) {
+            let timerInterval;
+            Swal.fire({
+                title: 'Loading Ad...',
+                html: 'Watching ad to claim points. Please wait <b></b>s.',
+                timer: 5000, 
+                timerProgressBar: true,
+                didOpen: () => {
+                    Swal.showLoading();
+                    const b = Swal.getHtmlContainer().querySelector('b');
+                    timerInterval = setInterval(() => {
+                        b.textContent = Math.ceil(Swal.getTimerLeft() / 1000);
+                    }, 100);
+                },
+                willClose: () => {
+                    clearInterval(timerInterval);
+                }
+            }).then((result) => {
+                if (result.dismiss === Swal.DismissReason.timer) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Reward Claimed!',
+                        text: `You have earned ${points.toLocaleString()} points from "${taskName}".`,
+                        confirmButtonColor: '#4caf50'
+                    });
+                    console.log(`Points added: ${points}`);
+                }
+            });
+        }
+    </script>
+</body>
+</html>

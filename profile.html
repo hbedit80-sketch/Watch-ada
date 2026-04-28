@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Profile UI</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background-color: #0b0b0b; color: #ffffff; height: 100vh; display: flex; justify-content: center; overflow: hidden; }
+        .container { width: 100%; max-width: 450px; height: 100vh; background-color: #0b0b0b; display: flex; flex-direction: column; position: relative; }
+        .header { display: flex; align-items: center; padding: 15px 20px; background-color: #0b0b0b; border-bottom: 1px solid #1a1a1a; }
+        .back-btn { color: #ffffff; font-size: 20px; text-decoration: none; cursor: pointer; width: 40px; }
+        .header h2 { flex: 1; font-size: 20px; font-weight: 500; text-align: center; margin-right: 40px; }
+        .profile-form { padding: 25px 20px; display: flex; flex-direction: column; gap: 20px; }
+        .input-group { display: flex; flex-direction: column; gap: 10px; }
+        .input-group label { color: #888; font-size: 15px; }
+        .input-group input { background-color: #1a1a1a; border: 1px solid #2a2a2a; color: #ffffff; padding: 16px; border-radius: 12px; font-size: 16px; outline: none; width: 100%; }
+        .input-group input:disabled { color: #555; border-color: #111; }
+        .save-btn { width: calc(100% - 40px); background-color: #2196f3; color: white; border: none; padding: 16px; border-radius: 12px; font-size: 18px; font-weight: 600; cursor: pointer; position: absolute; bottom: 30px; left: 20px; transition: 0.3s; }
+        .save-btn:disabled { background-color: #555; cursor: not-allowed; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header">
+            <a href="index.html" class="back-btn">
+                <i class="fa-solid fa-arrow-left"></i>
+            </a>
+            <h2>Profile</h2>
+        </div>
+
+        <div class="profile-form">
+            <div class="input-group">
+                <label>Full Name</label>
+                <input type="text" id="fullName" placeholder="Loading...">
+            </div>
+
+            <div class="input-group">
+                <label>Email (Fixed)</label>
+                <input type="email" id="email" disabled>
+            </div>
+        </div>
+
+        <button class="save-btn" id="saveBtn" onclick="saveData()">Save Changes</button>
+    </div>
+
+    <script>
+        // १. सुपाबेस कन्फिगरेसन
+        const SB_URL = "https://ryklvvbhfrlrwqxswydh.supabase.co";
+        const SB_KEY = "sb_publishable_MCd04uSNUXad3nPvy28dug_85fvcUwj";
+        const _supabase = supabase.createClient(SB_URL, SB_KEY);
+
+        let currentUser = null;
+
+        // २. युजरको डाटा तान्ने
+        async function loadProfile() {
+            const { data: { user } } = await _supabase.auth.getUser();
+
+            if (!user) {
+                window.location.href = "login.html";
+                return;
+            }
+
+            currentUser = user;
+            document.getElementById('email').value = user.email;
+
+            // profiles टेबलबाट युजरको नाम खोज्ने
+            const { data, error } = await _supabase
+                .from('profiles')
+                .select('full_name')
+                .eq('id', user.id)
+                .maybeSingle();
+
+            if (data && data.full_name) {
+                document.getElementById('fullName').value = data.full_name;
+            } else {
+                // यदि टेबलमा छैन भने Auth metadata बाट लिने
+                document.getElementById('fullName').value = user.user_metadata.full_name || "";
+            }
+        }
+
+        // ३. डाटा अपडेट गर्ने
+        async function saveData() {
+            const btn = document.getElementById('saveBtn');
+            const newName = document.getElementById('fullName').value;
+
+            if (!newName) {
+                Swal.fire('Error', 'Please enter your name', 'error');
+                return;
+            }
+
+            btn.innerText = "Updating...";
+            btn.disabled = true;
+
+            // profiles टेबलमा नाम अपडेट गर्ने
+            const { error } = await _supabase
+                .from('profiles')
+                .upsert({ 
+                    id: currentUser.id, 
+                    full_name: newName,
+                    updated_at: new Date()
+                });
+
+            if (error) {
+                Swal.fire('Failed', error.message, 'error');
+                btn.innerText = "Save Changes";
+                btn.disabled = false;
+            } else {
+                Swal.fire({
+                    title: 'Success!',
+                    text: 'Profile updated successfully',
+                    icon: 'success',
+                    confirmButtonColor: '#2196f3'
+                });
+                btn.innerText = "Saved";
+                btn.style.backgroundColor = "#4caf50";
+                
+                setTimeout(() => {
+                    btn.innerText = "Save Changes";
+                    btn.style.backgroundColor = "#2196f3";
+                    btn.disabled = false;
+                }, 2000);
+            }
+        }
+
+        // पेज लोड हुँदा फङ्सन चलाउने
+        window.onload = loadProfile;
+    </script>
+</body>
+</html>

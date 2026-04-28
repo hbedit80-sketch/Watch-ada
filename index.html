@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Dashboard UI</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background-color: #0b0b0b; color: #ffffff; display: flex; justify-content: center; min-height: 100vh; }
+        .container { width: 100%; max-width: 450px; background-color: #0b0b0b; display: flex; flex-direction: column; }
+
+        .header-section {
+            background-color: #006699; 
+            background-image: url('https://www.transparenttextures.com/patterns/carbon-fibre.png');
+            padding: 40px 20px 60px 20px;
+            text-align: center;
+            display: flex; flex-direction: column; align-items: center; gap: 15px;
+        }
+
+        .currency-selector {
+            background: rgba(0, 0, 0, 0.4);
+            padding: 8px 18px; border-radius: 20px; font-size: 14px;
+            display: flex; align-items: center; gap: 8px; cursor: pointer;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .balance-text { font-size: 38px; font-weight: bold; margin: 5px 0; }
+
+        .withdraw-btn {
+            width: 90%; background-color: #2196f3; color: white; border: none;
+            padding: 15px; border-radius: 12px; font-size: 18px; font-weight: 600;
+            cursor: pointer; margin-top: -25px; box-shadow: 0 8px 15px rgba(0, 0, 0, 0.4);
+            z-index: 10; align-self: center; text-align: center; text-decoration: none;
+        }
+
+        .menu-container { margin: 40px 20px; background-color: #1a1a1a; border-radius: 15px; border: 1px solid #222; }
+        .menu-item { display: flex; align-items: center; padding: 18px 20px; cursor: pointer; border-bottom: 1px solid #2a2a2a; }
+        .menu-item i { width: 30px; font-size: 20px; color: #2196f3; margin-right: 15px; }
+        .menu-item span { font-size: 16px; }
+
+        /* SweetAlert कालो थिम */
+        .swal2-popup { background: #1a1a1a !important; color: #fff !important; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header-section">
+            <div class="currency-selector" onclick="openCurrencyPicker()">
+                <span id="selectedCurrencyName">British Pound</span> <i class="fa-solid fa-caret-down"></i>
+            </div>
+            <div class="balance-text" id="balanceDisplay">Loading...</div>
+        </div>
+
+        <button class="withdraw-btn" onclick="goToWithdraw()">Withdraw</button>
+
+        <div class="menu-container">
+            <div class="menu-item" onclick="window.location.href='profile.html'"><i class="fa-solid fa-user"></i><span>Profile</span></div>
+            <div class="menu-item" onclick="window.location.href='earn.html'"><i class="fa-solid fa-circle-dollar-to-slot"></i><span>Earn</span></div>
+            <div class="menu-item" onclick="window.location.href='task.html'"><i class="fa-solid fa-list-check"></i><span>Task</span></div>
+            <div class="menu-item" onclick="window.location.href='watch_ads.html'"><i class="fa-solid fa-circle-play"></i><span>Watch Ads</span></div>
+            <div class="menu-item" onclick="window.location.href='guide.html'"><i class="fa-solid fa-book-bookmark"></i><span>Guide</span></div>
+            <div class="menu-item" onclick="window.location.href='history.html'"><i class="fa-solid fa-clock-rotate-left"></i><span>History</span></div>
+            <div class="menu-item" onclick="window.location.href='setting.html'"><i class="fa-solid fa-gear"></i><span>Settings</span></div>
+        </div>
+    </div>
+
+    <script>
+        // १. सुपाबेस कन्फिगरेसन (sb_ सानो अक्षरमा)
+        const SB_URL = "https://ryklvvbhfrlrwqxswydh.supabase.co";
+        const SB_KEY = "sb_publishable_MCd04uSNUXad3nPvy28dug_85fvcUwj"; 
+        const _supabase = supabase.createClient(SB_URL, SB_KEY);
+
+        let baseBalance = 0.00; 
+        let currentCurrencyCode = "GBP";
+
+        const currencies = {
+            "GBP": { name: "British Pound", symbol: "£", rate: 1 },
+            "USD": { name: "US Dollar", symbol: "$", rate: 1.25 },
+            "EUR": { name: "Euro", symbol: "€", rate: 1.15 },
+            "NPR": { name: "Nepalese Rupee", symbol: "Rs", rate: 165.50 },
+            "INR": { name: "Indian Rupee", symbol: "₹", rate: 104.20 },
+            "AED": { name: "UAE Dirham", symbol: "DH", rate: 4.60 },
+            "SAR": { name: "Saudi Riyal", symbol: "SR", rate: 4.70 },
+            "MYR": { name: "Malaysian Ringgit", symbol: "RM", rate: 5.90 },
+            "JPY": { name: "Japanese Yen", symbol: "¥", rate: 195.00 },
+            "USDT": { name: "USDT (Crypto)", symbol: "₮", rate: 1.25 }
+        };
+
+        // २. युजरको डेटा तान्ने फङ्सन
+        async function fetchUserData() {
+            try {
+                // लगइन भएको युजर चेक गर्ने
+                const { data: { session }, error: sessionError } = await _supabase.auth.getSession();
+
+                if (!session) {
+                    // लगइन छैन भने लगइन पेजमा पठाउने
+                    window.location.href = "auth.html"; 
+                    return;
+                }
+
+                const user = session.user;
+
+                // 'profiles' टेबलबाट ब्यालेन्स तान्ने
+                const { data, error } = await _supabase
+                    .from('profiles')
+                    .select('balance')
+                    .eq('id', user.id)
+                    .maybeSingle();
+
+                if (data) {
+                    baseBalance = data.balance || 0.00;
+                } else {
+                    baseBalance = 0.00;
+                }
+                
+                updateBalance(currentCurrencyCode);
+
+            } catch (err) {
+                console.error("Error fetching data:", err);
+                document.getElementById('balanceDisplay').innerText = "Error";
+            }
+        }
+
+        // ३. करेन्सी सेलेक्टर
+        function openCurrencyPicker() {
+            let options = {};
+            for (let code in currencies) {
+                options[code] = currencies[code].name;
+            }
+
+            Swal.fire({
+                title: 'Select Currency',
+                input: 'select',
+                inputOptions: options,
+                inputPlaceholder: 'Choose currency',
+                showCancelButton: true,
+                confirmButtonColor: '#2196f3',
+            }).then((result) => {
+                if (result.value) {
+                    currentCurrencyCode = result.value;
+                    updateBalance(result.value);
+                }
+            });
+        }
+
+        // ४. ब्यालेन्स डिस्प्ले अपडेट गर्ने
+        function updateBalance(code) {
+            const currency = currencies[code];
+            const convertedAmount = (baseBalance * currency.rate).toFixed(2);
+            document.getElementById('selectedCurrencyName').innerText = currency.name;
+            document.getElementById('balanceDisplay').innerText = `${currency.symbol} ${convertedAmount}`;
+        }
+
+        function goToWithdraw() {
+            window.location.href = "withdraw.html";
+        }
+
+        // पेज लोड हुँदा डेटा तान्ने
+        window.onload = fetchUserData;
+    </script>
+</body>
+</html>

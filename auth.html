@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Login & Register</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; -webkit-tap-highlight-color: transparent; }
+        html, body { height: 100%; width: 100%; background-color: #0b0b0b; color: #ffffff; overflow: hidden; }
+        body { display: flex; justify-content: center; align-items: flex-start; }
+        .main-wrapper { width: 100%; max-width: 450px; height: 100vh; display: flex; flex-direction: column; padding: 10px 25px; }
+        .image-container { padding-top: 30px; margin-bottom: 20px; display: flex; justify-content: center; align-items: center; }
+        .logo-box { width: 100px; height: 100px; border-radius: 50%; background: #1a1a1a; display: flex; justify-content: center; align-items: center; border: 2px solid #2196f3; box-shadow: 0 0 15px rgba(33, 150, 243, 0.3); overflow: hidden; }
+        .logo-box img { width: 100%; height: 100%; object-fit: cover; }
+        .forms-wrapper { flex: 1; display: flex; flex-direction: column; justify-content: center; padding-bottom: 50px; }
+        .title { font-size: 22px; font-weight: 600; text-align: center; margin-bottom: 25px; color: #fff; letter-spacing: 1px; }
+        .input-box { background-color: #161616; border-radius: 12px; display: flex; align-items: center; padding: 15px 18px; margin-bottom: 15px; border: 1px solid #222; }
+        .input-box i { color: #2196f3; font-size: 17px; margin-right: 15px; width: 20px; text-align: center; }
+        .input-box input { background: transparent; border: none; color: white; width: 100%; outline: none; font-size: 16px; }
+        .forgot-btn { background: none; border: none; display: block; width: 100%; text-align: right; color: #777; margin-bottom: 20px; font-size: 14px; cursor: pointer; }
+        .button-group { display: flex; flex-direction: column; gap: 12px; }
+        .btn { width: 100%; padding: 16px; border-radius: 12px; font-size: 17px; font-weight: 600; cursor: pointer; border: none; transition: 0.3s; display: flex; align-items: center; justify-content: center; }
+        .btn-primary { background-color: #2196f3; color: white; box-shadow: 0 4px 15px rgba(33, 150, 243, 0.2); }
+        .btn-outline { background-color: transparent; border: 1px solid #333; color: #eee; }
+        
+        .btn-google { 
+            background-color: #ffffff; 
+            color: #000; 
+            margin-top: 5px; 
+            border: 1px solid #ddd;
+        }
+        .btn-google img { 
+            width: 20px; 
+            height: 20px; 
+            margin-right: 12px; 
+        }
+
+        .divider { text-align: center; margin: 10px 0; color: #444; font-size: 14px; }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.8); display: none; justify-content: center; align-items: center; z-index: 1000; backdrop-filter: blur(3px); }
+        .modal-box { background: #1e1e1e; width: 300px; padding: 25px; border-radius: 15px; text-align: center; border: 1px solid #333; }
+        .modal-box p { font-size: 15px; color: #fff; margin-bottom: 20px; }
+        .modal-btn { background: #2196f3; color: white; border: none; padding: 10px 30px; border-radius: 8px; font-weight: 600; cursor: pointer; }
+        #registerForm { display: none; }
+    </style>
+</head>
+<body>
+
+    <div id="modalOverlay" class="modal-overlay">
+        <div class="modal-box">
+            <p id="modalMsg"></p>
+            <div id="modalButtons">
+                <button id="mainModalBtn" class="modal-btn" onclick="closeModal()">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-wrapper">
+        <div class="image-container">
+            <div class="logo-box">
+                <img src="https://i.ibb.co/fYfsPqSL/logo.png" alt="User Logo">
+            </div>
+        </div>
+
+        <div class="forms-wrapper">
+            <div id="loginForm">
+                <h2 class="title">ACCOUNT LOGIN</h2>
+                <div class="input-box">
+                    <i class="fa-regular fa-envelope"></i>
+                    <input type="email" id="loginEmail" placeholder="Email address">
+                </div>
+                <div class="input-box">
+                    <i class="fa-solid fa-lock"></i>
+                    <input type="password" id="loginPass" placeholder="Password">
+                </div>
+                <button class="forgot-btn" onclick="handleForgotClick()">Forgot Password?</button>
+                <div class="button-group">
+                    <button class="btn btn-primary" onclick="handleSignIn()">LOGIN</button>
+                    <div class="divider">OR</div>
+                    <button class="btn btn-google" onclick="handleGoogleLogin()">
+                        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google Logo">
+                        Continue with Google
+                    </button>
+                    <button class="btn btn-outline" onclick="toggleForms('register')" style="margin-top: 10px;">CREATE ACCOUNT</button>
+                </div>
+            </div>
+
+            <div id="registerForm">
+                <h2 class="title">CREATE ACCOUNT</h2>
+                <div class="input-box"><i class="fa-regular fa-user"></i><input type="text" id="regName" placeholder="Full Name"></div>
+                <div class="input-box"><i class="fa-regular fa-envelope"></i><input type="email" id="regEmail" placeholder="Email address"></div>
+                <div class="input-box"><i class="fa-solid fa-lock"></i><input type="password" id="regPass" placeholder="Password"></div>
+                <div class="input-box"><i class="fa-solid fa-shield-halved"></i><input type="password" id="regRetryPass" placeholder="Retry Password"></div>
+                <div class="button-group" style="margin-top: 15px;">
+                    <button class="btn btn-primary" onclick="handleSignUp()">REGISTER</button>
+                    <button class="btn btn-outline" onclick="toggleForms('login')">ALREADY HAVE ACCOUNT</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // सुपाबेस कन्फिगरेसन - सानो अक्षर (sb_) प्रयोग गरिएको छ
+        const SB_URL = "https://ryklvvbhfrlrwqxswydh.supabase.co";
+        const SB_KEY = "sb_publishable_MCd04uSNUXad3nPvy28dug_85fvcUwj"; 
+        
+        const _supabase = supabase.createClient(SB_URL, SB_KEY);
+
+        // १. गुगल लगइन
+        async function handleGoogleLogin() {
+            const { error } = await _supabase.auth.signInWithOAuth({
+                provider: 'google',
+                options: { redirectTo: window.location.origin + "/index.html" }
+            });
+            if (error) showModal("Google Error: " + error.message);
+        }
+
+        // २. इमेल लगइन
+        async function handleSignIn() {
+            const email = document.getElementById('loginEmail').value;
+            const pass = document.getElementById('loginPass').value;
+            
+            if(!email || !pass) { showModal("Please fill all fields!"); return; }
+
+            const { data, error } = await _supabase.auth.signInWithPassword({
+                email: email,
+                password: pass,
+            });
+
+            if (error) {
+                showModal("Login failed: " + error.message);
+            } else {
+                showModal("Login successful!");
+                setTimeout(() => { window.location.href = "index.html"; }, 1000);
+            }
+        }
+
+        // ३. एकाउन्ट बनाउने
+        async function handleSignUp() {
+            const name = document.getElementById('regName').value;
+            const email = document.getElementById('regEmail').value;
+            const pass = document.getElementById('regPass').value;
+            const retryPass = document.getElementById('regRetryPass').value;
+
+            if(!name || !email || !pass || !retryPass) { showModal("Please fill all fields!"); return; }
+            if(pass !== retryPass) { showModal("Passwords do not match!"); return; }
+
+            const { data, error } = await _supabase.auth.signUp({
+                email: email,
+                password: pass,
+                options: {
+                    data: { full_name: name }
+                }
+            });
+
+            if (error) {
+                showModal("Error: " + error.message);
+            } else {
+                showModal("Account created! Check your email to confirm.");
+                setTimeout(() => { toggleForms('login'); }, 2000);
+            }
+        }
+
+        function showModal(text) {
+            document.getElementById('modalMsg').innerText = text;
+            document.getElementById('modalOverlay').style.display = 'flex';
+        }
+        function closeModal() { document.getElementById('modalOverlay').style.display = 'none'; }
+        
+        function toggleForms(type) {
+            document.getElementById('loginForm').style.display = (type === 'register') ? 'none' : 'block';
+            document.getElementById('registerForm').style.display = (type === 'register') ? 'block' : 'none';
+        }
+
+        function handleForgotClick() { showModal("Reset link feature coming soon!"); }
+    </script>
+</body>
+</html>

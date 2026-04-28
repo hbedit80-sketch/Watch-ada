@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Transaction History</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: #0b0b0b;
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 450px;
+            background-color: #0b0b0b;
+            display: flex;
+            flex-direction: column;
+            padding-bottom: 20px;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            position: sticky;
+            top: 0;
+            background-color: #0b0b0b;
+            z-index: 10;
+        }
+
+        .back-btn {
+            color: #ffffff;
+            font-size: 20px;
+            text-decoration: none;
+            width: 40px;
+        }
+
+        .header h2 {
+            flex: 1;
+            font-size: 20px;
+            font-weight: 500;
+            text-align: center;
+            margin-right: 40px;
+        }
+
+        .history-list {
+            padding: 10px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .history-item {
+            background-color: #1a1a1a;
+            padding: 15px 20px;
+            border-radius: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid #222;
+        }
+
+        .info-box {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .type {
+            font-size: 15px;
+            font-weight: 500;
+            color: #ffffff;
+        }
+
+        .date {
+            font-size: 12px;
+            color: #888;
+        }
+
+        .amount-box {
+            text-align: right;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .coin-amount {
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .usdt-amount {
+            font-size: 12px;
+            opacity: 0.8;
+            font-weight: 500;
+        }
+
+        /* Positive */
+        .deposit { color: #4caf50; }
+
+        /* Negative */
+        .withdraw { color: #f44336; }
+
+        .empty-msg {
+            text-align: center;
+            color: #555;
+            margin-top: 50px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header">
+            <a href="index.html" class="back-btn">
+                <i class="fa-solid fa-arrow-left"></i>
+            </a>
+            <h2>Transaction History</h2>
+        </div>
+
+        <div class="history-list" id="historyList">
+            
+            <div class="history-item">
+                <div class="info-box">
+                    <span class="type">Long Ad Reward</span>
+                    <span class="date">26.4.2026 22:15</span>
+                </div>
+                <div class="amount-box">
+                    <span class="coin-amount deposit">+10 Coins</span>
+                    <span class="usdt-amount deposit">≈ 0.010 USDT</span>
+                </div>
+            </div>
+
+            <div class="history-item">
+                <div class="info-box">
+                    <span class="type">Withdrawal (PayPal)</span>
+                    <span class="date">26.4.2026 14:20</span>
+                </div>
+                <div class="amount-box">
+                    <span class="coin-amount withdraw">-1000 Coins</span>
+                    <span class="usdt-amount withdraw">-1.000 USDT</span>
+                </div>
+            </div>
+
+            <div class="history-item">
+                <div class="info-box">
+                    <span class="type">Medium Ad Reward</span>
+                    <span class="date">26.4.2026 10:15</span>
+                </div>
+                <div class="amount-box">
+                    <span class="coin-amount deposit">+5 Coins</span>
+                    <span class="usdt-amount deposit">≈ 0.005 USDT</span>
+                </div>
+            </div>
+
+        </div>
+
+        <div id="emptyMessage" class="empty-msg" style="display: none;">
+            No transactions found yet.
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const list = document.getElementById('historyList');
+            const emptyMsg = document.getElementById('emptyMessage');
+
+            if (list.children.length === 0) {
+                emptyMsg.style.display = 'block';
+            }
+        });
+    </script>
+
+</body>
+</html>

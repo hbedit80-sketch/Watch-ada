@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>About Us</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: #0b0b0b;
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 450px;
+            display: flex;
+            flex-direction: column;
+            padding: 0 20px 30px 20px;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            align-items: center;
+            padding: 20px 0;
+        }
+
+        .back-btn {
+            color: #ffffff;
+            font-size: 18px;
+            text-decoration: none;
+            width: 30px;
+        }
+
+        .header h2 {
+            flex: 1;
+            font-size: 20px;
+            font-weight: 500;
+            text-align: center;
+            margin-right: 30px;
+        }
+
+        /* Content Sections */
+        .content-section {
+            background-color: #1a1a1a;
+            padding: 25px 20px;
+            border-radius: 20px;
+            border: 1px solid #222;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .content-section h3 {
+            color: #f3ba2f; 
+            font-size: 18px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .content-section p {
+            color: #cccccc;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .feature-item i {
+            color: #4caf50;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .feature-text {
+            color: #eee;
+            font-size: 14px;
+        }
+
+        /* Contact Info */
+        .contact-box {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 10px;
+        }
+
+        .contact-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #a1a1a6;
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.2s;
+            background: rgba(255,255,255,0.03);
+            padding: 10px;
+            border-radius: 10px;
+        }
+
+        .contact-link:active {
+            color: #f3ba2f;
+            background: rgba(243, 186, 47, 0.1);
+        }
+
+        .footer-text {
+            text-align: center;
+            color: #555;
+            font-size: 12px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header">
+            <a href="setting.html" class="back-btn">
+                <i class="fa-solid fa-arrow-left"></i>
+            </a>
+            <h2>About Us</h2>
+        </div>
+
+        <div class="content-section">
+            <h3><i class="fa-solid fa-rocket"></i> Who We Are</h3>
+            <p>We are a leading digital reward platform designed to help users monetize their spare time. Our mission is to provide a seamless and engaging environment where entertainment meets earnings.</p>
+        </div>
+
+        <div class="content-section">
+            <h3><i class="fa-solid fa-circle-nodes"></i> How It Works</h3>
+            
+            <div class="feature-item">
+                <i class="fa-solid fa-play"></i>
+                <div class="feature-text"><strong>Watch Ads:</strong> Choose between Short (15s), Medium (30s), or Long (60s) ads based on your preference.</div>
+            </div>
+
+            <div class="feature-item">
+                <i class="fa-solid fa-coins"></i>
+                <div class="feature-text"><strong>Earn Coins:</strong> Get rewarded with instant coins in your wallet for every successful ad view.</div>
+            </div>
+
+            <div class="feature-item">
+                <i class="fa-solid fa-wallet"></i>
+                <div class="feature-text"><strong>Redeem:</strong> Convert your accumulated coins into USDT or other available withdrawal methods once you hit the threshold.</div>
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h3><i class="fa-solid fa-headset"></i> Support</h3>
+            <p>Have questions or feedback? Our team is here to help you 24/7. Feel free to reach out through any of the channels below:</p>
+            
+            <div class="contact-box">
+                <a href="mailto:support@yourdomain.com" class="contact-link">
+                    <i class="fa-solid fa-envelope" style="color: #ea4335;"></i>
+                    <span>support@yourdomain.com</span>
+                </a>
+                <a href="https://yourdomain.com" target="_blank" class="contact-link">
+                    <i class="fa-solid fa-globe" style="color: #4285f4;"></i>
+                    <span>Official Website</span>
+                </a>
+            </div>
+        </div>
+
+        <p class="footer-text">© 2026 Your App Name. All Rights Reserved.</p>
+    </div>
+
+</body>
+</html>
