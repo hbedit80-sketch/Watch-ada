@@ -6,7 +6,6 @@
     <title>Dashboard UI</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <style>
@@ -17,19 +16,29 @@
         .header-section {
             background-color: #006699; 
             background-image: url('https://www.transparenttextures.com/patterns/carbon-fibre.png');
-            padding: 40px 20px 60px 20px;
+            padding: 30px 20px 60px 20px;
             text-align: center;
-            display: flex; flex-direction: column; align-items: center; gap: 15px;
+            display: flex; flex-direction: column; align-items: center; gap: 8px;
+        }
+
+        /* Coins Display Style */
+        .coin-display {
+            display: flex; align-items: center; gap: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 5px 15px; border-radius: 50px;
+            font-size: 16px; font-weight: 600; color: #ffd700;
+            margin-bottom: 10px; border: 1px solid rgba(255, 215, 0, 0.3);
         }
 
         .currency-selector {
             background: rgba(0, 0, 0, 0.4);
-            padding: 8px 18px; border-radius: 20px; font-size: 14px;
+            padding: 6px 15px; border-radius: 20px; font-size: 13px;
             display: flex; align-items: center; gap: 8px; cursor: pointer;
             border: 1px solid rgba(255,255,255,0.1);
         }
 
-        .balance-text { font-size: 38px; font-weight: bold; margin: 5px 0; }
+        .balance-text { font-size: 34px; font-weight: bold; margin-top: 5px; }
+        .sub-text { font-size: 12px; opacity: 0.7; margin-top: -5px; }
 
         .withdraw-btn {
             width: 90%; background-color: #2196f3; color: white; border: none;
@@ -43,7 +52,6 @@
         .menu-item i { width: 30px; font-size: 20px; color: #2196f3; margin-right: 15px; }
         .menu-item span { font-size: 16px; }
 
-        /* SweetAlert कालो थिम */
         .swal2-popup { background: #1a1a1a !important; color: #fff !important; }
     </style>
 </head>
@@ -51,10 +59,16 @@
 
     <div class="container">
         <div class="header-section">
+            <div class="coin-display">
+                <i class="fa-solid fa-coins"></i> <span id="coinDisplay">0</span> Coins
+            </div>
+
             <div class="currency-selector" onclick="openCurrencyPicker()">
                 <span id="selectedCurrencyName">British Pound</span> <i class="fa-solid fa-caret-down"></i>
             </div>
+
             <div class="balance-text" id="balanceDisplay">Loading...</div>
+            <div class="sub-text">Estimated Earnings</div>
         </div>
 
         <button class="withdraw-btn" onclick="goToWithdraw()">Withdraw</button>
@@ -71,13 +85,15 @@
     </div>
 
     <script>
-        // १. सुपाबेस कन्फिगरेसन (sb_ सानो अक्षरमा)
         const SB_URL = "https://ryklvvbhfrlrwqxswydh.supabase.co";
         const SB_KEY = "sb_publishable_MCd04uSNUXad3nPvy28dug_85fvcUwj"; 
         const _supabase = supabase.createClient(SB_URL, SB_KEY);
 
-        let baseBalance = 0.00; 
+        let totalCoins = 0; 
         let currentCurrencyCode = "GBP";
+
+        // कन्भर्सन रेट (१ GBP = १००० Coins मानिएको छ)
+        const coinToGbpRate = 0.001; 
 
         const currencies = {
             "GBP": { name: "British Pound", symbol: "£", rate: 1 },
@@ -86,48 +102,37 @@
             "NPR": { name: "Nepalese Rupee", symbol: "Rs", rate: 165.50 },
             "INR": { name: "Indian Rupee", symbol: "₹", rate: 104.20 },
             "AED": { name: "UAE Dirham", symbol: "DH", rate: 4.60 },
-            "SAR": { name: "Saudi Riyal", symbol: "SR", rate: 4.70 },
             "MYR": { name: "Malaysian Ringgit", symbol: "RM", rate: 5.90 },
-            "JPY": { name: "Japanese Yen", symbol: "¥", rate: 195.00 },
             "USDT": { name: "USDT (Crypto)", symbol: "₮", rate: 1.25 }
         };
 
-        // २. युजरको डेटा तान्ने फङ्सन
         async function fetchUserData() {
             try {
-                // लगइन भएको युजर चेक गर्ने
-                const { data: { session }, error: sessionError } = await _supabase.auth.getSession();
-
+                const { data: { session } } = await _supabase.auth.getSession();
                 if (!session) {
-                    // लगइन छैन भने लगइन पेजमा पठाउने
                     window.location.href = "auth.html"; 
                     return;
                 }
 
                 const user = session.user;
-
-                // 'profiles' टेबलबाट ब्यालेन्स तान्ने
-                const { data, error } = await _supabase
+                const { data } = await _supabase
                     .from('profiles')
                     .select('balance')
                     .eq('id', user.id)
                     .maybeSingle();
 
-                if (data) {
-                    baseBalance = data.balance || 0.00;
-                } else {
-                    baseBalance = 0.00;
-                }
+                totalCoins = data ? (data.balance || 0) : 0;
                 
+                // UI अपडेट गर्ने
+                document.getElementById('coinDisplay').innerText = totalCoins.toLocaleString();
                 updateBalance(currentCurrencyCode);
 
             } catch (err) {
-                console.error("Error fetching data:", err);
+                console.error("Error:", err);
                 document.getElementById('balanceDisplay').innerText = "Error";
             }
         }
 
-        // ३. करेन्सी सेलेक्टर
         function openCurrencyPicker() {
             let options = {};
             for (let code in currencies) {
@@ -138,7 +143,7 @@
                 title: 'Select Currency',
                 input: 'select',
                 inputOptions: options,
-                inputPlaceholder: 'Choose currency',
+                inputPlaceholder: 'Choose country',
                 showCancelButton: true,
                 confirmButtonColor: '#2196f3',
             }).then((result) => {
@@ -149,19 +154,20 @@
             });
         }
 
-        // ४. ब्यालेन्स डिस्प्ले अपडेट गर्ने
         function updateBalance(code) {
             const currency = currencies[code];
-            const convertedAmount = (baseBalance * currency.rate).toFixed(2);
+            // पहिले Coins लाई GBP मा लैजाने, त्यसपछि छानिएको देशको दरले गुणा गर्ने
+            const amountInGbp = totalCoins * coinToGbpRate;
+            const finalAmount = (amountInGbp * currency.rate).toFixed(2);
+
             document.getElementById('selectedCurrencyName').innerText = currency.name;
-            document.getElementById('balanceDisplay').innerText = `${currency.symbol} ${convertedAmount}`;
+            document.getElementById('balanceDisplay').innerText = `${currency.symbol} ${finalAmount}`;
         }
 
         function goToWithdraw() {
             window.location.href = "withdraw.html";
         }
 
-        // पेज लोड हुँदा डेटा तान्ने
         window.onload = fetchUserData;
     </script>
 </body>
