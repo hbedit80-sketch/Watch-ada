@@ -5,185 +5,113 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Transaction History</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        body {
-            background-color: #0b0b0b;
-            color: #ffffff;
-            display: flex;
-            justify-content: center;
-            min-height: 100vh;
-        }
-
-        .container {
-            width: 100%;
-            max-width: 450px;
-            background-color: #0b0b0b;
-            display: flex;
-            flex-direction: column;
-            padding-bottom: 20px;
-        }
-
-        .header {
-            display: flex;
-            align-items: center;
-            padding: 15px 20px;
-            position: sticky;
-            top: 0;
-            background-color: #0b0b0b;
-            z-index: 10;
-        }
-
-        .back-btn {
-            color: #ffffff;
-            font-size: 20px;
-            text-decoration: none;
-            width: 40px;
-        }
-
-        .header h2 {
-            flex: 1;
-            font-size: 20px;
-            font-weight: 500;
-            text-align: center;
-            margin-right: 40px;
-        }
-
-        .history-list {
-            padding: 10px 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .history-item {
-            background-color: #1a1a1a;
-            padding: 15px 20px;
-            border-radius: 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border: 1px solid #222;
-        }
-
-        .info-box {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-
-        .type {
-            font-size: 15px;
-            font-weight: 500;
-            color: #ffffff;
-        }
-
-        .date {
-            font-size: 12px;
-            color: #888;
-        }
-
-        .amount-box {
-            text-align: right;
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-        }
-
-        .coin-amount {
-            font-size: 16px;
-            font-weight: bold;
-        }
-
-        .usdt-amount {
-            font-size: 12px;
-            opacity: 0.8;
-            font-weight: 500;
-        }
-
-        /* Positive */
-        .deposit { color: #4caf50; }
-
-        /* Negative */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background-color: #0b0b0b; color: #ffffff; display: flex; justify-content: center; min-height: 100vh; }
+        .container { width: 100%; max-width: 450px; background-color: #0b0b0b; display: flex; flex-direction: column; padding-bottom: 20px; }
+        .header { display: flex; align-items: center; padding: 15px 20px; position: sticky; top: 0; background-color: #0b0b0b; z-index: 10; border-bottom: 1px solid #1a1a1a; }
+        .back-btn { color: #ffffff; font-size: 20px; text-decoration: none; width: 40px; }
+        .header h2 { flex: 1; font-size: 20px; font-weight: 500; text-align: center; margin-right: 40px; }
+        .history-list { padding: 15px 20px; display: flex; flex-direction: column; gap: 12px; }
+        .history-item { background-color: #1a1a1a; padding: 15px 20px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #222; }
+        .info-box { display: flex; flex-direction: column; gap: 4px; }
+        .type { font-size: 15px; font-weight: 500; color: #ffffff; }
+        .status-badge { font-size: 10px; padding: 2px 8px; border-radius: 4px; text-transform: uppercase; font-weight: bold; width: fit-content; }
+        .status-pending { background: #ff980033; color: #ff9800; }
+        .status-completed { background: #4caf5033; color: #4caf50; }
+        .date { font-size: 11px; color: #666; margin-top: 2px; }
+        .amount-box { text-align: right; display: flex; flex-direction: column; gap: 2px; }
+        .coin-amount { font-size: 15px; font-weight: bold; }
+        .pound-amount { font-size: 12px; opacity: 0.7; }
         .withdraw { color: #f44336; }
-
-        .empty-msg {
-            text-align: center;
-            color: #555;
-            margin-top: 50px;
-            font-size: 14px;
-        }
+        .deposit { color: #4caf50; }
+        .empty-msg { text-align: center; color: #555; margin-top: 100px; font-size: 14px; }
+        .loading-spinner { text-align: center; margin-top: 50px; color: #2196f3; }
     </style>
 </head>
 <body>
 
     <div class="container">
         <div class="header">
-            <a href="index.html" class="back-btn">
-                <i class="fa-solid fa-arrow-left"></i>
-            </a>
-            <h2>Transaction History</h2>
+            <a href="index.html" class="back-btn"><i class="fa-solid fa-arrow-left"></i></a>
+            <h2>History</h2>
         </div>
 
-        <div class="history-list" id="historyList">
-            
-            <div class="history-item">
-                <div class="info-box">
-                    <span class="type">Long Ad Reward</span>
-                    <span class="date">26.4.2026 22:15</span>
-                </div>
-                <div class="amount-box">
-                    <span class="coin-amount deposit">+10 Coins</span>
-                    <span class="usdt-amount deposit">≈ 0.010 USDT</span>
-                </div>
-            </div>
-
-            <div class="history-item">
-                <div class="info-box">
-                    <span class="type">Withdrawal (PayPal)</span>
-                    <span class="date">26.4.2026 14:20</span>
-                </div>
-                <div class="amount-box">
-                    <span class="coin-amount withdraw">-1000 Coins</span>
-                    <span class="usdt-amount withdraw">-1.000 USDT</span>
-                </div>
-            </div>
-
-            <div class="history-item">
-                <div class="info-box">
-                    <span class="type">Medium Ad Reward</span>
-                    <span class="date">26.4.2026 10:15</span>
-                </div>
-                <div class="amount-box">
-                    <span class="coin-amount deposit">+5 Coins</span>
-                    <span class="usdt-amount deposit">≈ 0.005 USDT</span>
-                </div>
-            </div>
-
+        <div id="loading" class="loading-spinner">
+            <i class="fa-solid fa-circle-notch fa-spin fa-2x"></i>
         </div>
+
+        <div class="history-list" id="historyList"></div>
 
         <div id="emptyMessage" class="empty-msg" style="display: none;">
+            <i class="fa-solid fa-receipt fa-3x" style="margin-bottom: 15px; opacity: 0.2;"></i><br>
             No transactions found yet.
         </div>
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const list = document.getElementById('historyList');
-            const emptyMsg = document.getElementById('emptyMessage');
+        // १. सुपाबेस कन्फिग
+        const SB_URL = "https://ryklvvbhfrlrwqxswydh.supabase.co";
+        const SB_KEY = "sb_publishable_MCd04uSNUXad3nPvy28dug_85fvcUwj"; 
+        const _supabase = supabase.createClient(SB_URL, SB_KEY);
 
-            if (list.children.length === 0) {
-                emptyMsg.style.display = 'block';
+        async function fetchHistory() {
+            try {
+                const { data: { user } } = await _supabase.auth.getUser();
+                if (!user) {
+                    window.location.href = "auth.html";
+                    return;
+                }
+
+                // २. Withdrawals टेबलबाट डाटा तान्ने
+                const { data, error } = await _supabase
+                    .from('withdrawals')
+                    .select('*')
+                    .eq('user_id', user.id)
+                    .order('created_at', { ascending: false });
+
+                document.getElementById('loading').style.display = 'none';
+
+                if (error) throw error;
+
+                const list = document.getElementById('historyList');
+                if (!data || data.length === 0) {
+                    document.getElementById('emptyMessage').style.display = 'block';
+                    return;
+                }
+
+                // ३. डाटालाई लिस्टमा देखाउने
+                data.forEach(item => {
+                    const date = new Date(item.created_at).toLocaleString();
+                    const coins = item.amount * 1000; // १ पाउन्ड = १००० कोइन्स हिसाबले
+                    const statusClass = item.status === 'pending' ? 'status-pending' : 'status-completed';
+
+                    const html = `
+                        <div class="history-item">
+                            <div class="info-box">
+                                <span class="type">${item.method}</span>
+                                <span class="status-badge ${statusClass}">${item.status}</span>
+                                <span class="date">${date}</span>
+                            </div>
+                            <div class="amount-box">
+                                <span class="coin-amount withdraw">-${coins} Coins</span>
+                                <span class="pound-amount withdraw">£ ${item.amount.toFixed(2)}</span>
+                            </div>
+                        </div>
+                    `;
+                    list.innerHTML += html;
+                });
+
+            } catch (err) {
+                console.error(err);
+                document.getElementById('loading').innerText = "Failed to load history.";
             }
-        });
-    </script>
+        }
 
+        window.onload = fetchHistory;
+    </script>
 </body>
 </html>
