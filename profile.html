@@ -15,77 +15,38 @@
         
         .container { width: 100%; max-width: 450px; background-color: #0b0b0b; display: flex; flex-direction: column; min-height: 100vh; padding-bottom: 30px; }
 
-        /* Header with Back Button */
         .header { 
-            display: flex; 
-            align-items: center; 
-            padding: 15px 20px; 
-            background-color: rgba(11, 11, 11, 0.95); 
-            border-bottom: 1px solid #1a1a1a; 
-            position: sticky; 
-            top: 0; 
-            z-index: 100; 
-            backdrop-filter: blur(10px); 
+            display: flex; align-items: center; padding: 15px 20px; 
+            background-color: rgba(11, 11, 11, 0.95); border-bottom: 1px solid #1a1a1a; 
+            position: sticky; top: 0; z-index: 100; backdrop-filter: blur(10px); 
         }
         
         .back-btn {
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: #1a1a1a;
-            border-radius: 12px;
-            color: #fff;
-            text-decoration: none;
-            font-size: 18px;
-            transition: 0.3s;
-            border: 1px solid #2a2a2a;
+            width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;
+            background: #1a1a1a; border-radius: 12px; color: #fff; text-decoration: none;
+            font-size: 18px; transition: 0.3s; border: 1px solid #2a2a2a;
         }
         .back-btn:active { transform: scale(0.9); background: #333; }
 
-        .header h2 { 
-            flex: 1; 
-            font-size: 18px; 
-            font-weight: 600; 
-            text-align: center; 
-            margin-right: 40px; /* Center align balance for the back button */
-        }
+        .header h2 { flex: 1; font-size: 18px; font-weight: 600; text-align: center; margin-right: 40px; }
 
         .profile-top { 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            padding: 40px 20px 20px 20px; 
-            background: linear-gradient(180deg, #161616 0%, #0b0b0b 100%); 
+            display: flex; flex-direction: column; align-items: center; 
+            padding: 40px 20px 20px 20px; background: linear-gradient(180deg, #161616 0%, #0b0b0b 100%); 
         }
 
-        .avatar-container { 
-            position: relative; 
-            margin-bottom: 20px; 
-            width: 110px; 
-            height: 110px; 
-        }
-        
-        .avatar { 
-            width: 100%; height: 100%; border-radius: 50%; object-fit: cover; 
-            border: 3px solid #f3ba2f; box-shadow: 0 0 20px rgba(243, 186, 47, 0.2); 
-        }
-        
+        .avatar-container { position: relative; margin-bottom: 20px; width: 110px; height: 110px; }
+        .avatar { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 3px solid #f3ba2f; box-shadow: 0 0 20px rgba(243, 186, 47, 0.2); }
         .edit-avatar { 
-            position: absolute; bottom: 5px; right: 5px; background-color: #f3ba2f; 
-            color: black; width: 32px; height: 32px; border-radius: 50%; 
-            display: flex; align-items: center; justify-content: center; font-size: 12px; 
-            border: 3px solid #0b0b0b; cursor: pointer; 
+            position: absolute; bottom: 5px; right: 5px; background-color: #f3ba2f; color: black; 
+            width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; 
+            justify-content: center; font-size: 12px; border: 3px solid #0b0b0b; cursor: pointer; 
         }
 
-        .stats-grid { 
-            display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; padding: 0 20px; margin-bottom: 20px;
-        }
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; padding: 0 20px; margin-bottom: 20px; }
         .stat-card { 
             background: #161616; border: 1px solid #2a2a2a; padding: 12px; border-radius: 14px; 
-            display: flex; flex-direction: column; align-items: center; text-align: center;
-            transition: 0.2s; cursor: pointer;
+            display: flex; flex-direction: column; align-items: center; text-align: center; transition: 0.2s; cursor: pointer;
         }
         .stat-card:active { transform: scale(0.95); }
         .stat-card i { font-size: 18px; margin-bottom: 6px; }
@@ -101,17 +62,10 @@
         .profile-form { padding: 10px 20px; display: flex; flex-direction: column; gap: 15px; }
         .input-group { display: flex; flex-direction: column; gap: 5px; }
         .input-group label { color: #888; font-size: 12px; margin-left: 5px; }
-        .input-group input { 
-            background-color: #1a1a1a; border: 1px solid #2a2a2a; color: #fff; 
-            padding: 14px; border-radius: 12px; font-size: 14px; outline: none; 
-        }
+        .input-group input { background-color: #1a1a1a; border: 1px solid #2a2a2a; color: #fff; padding: 14px; border-radius: 12px; font-size: 14px; outline: none; }
         .input-group input:disabled { opacity: 0.6; }
 
-        .save-btn { 
-            background: #f3ba2f; color: black; border: none; padding: 16px; 
-            border-radius: 12px; font-size: 16px; font-weight: 700; cursor: pointer; 
-            margin: 20px; transition: 0.3s; 
-        }
+        .save-btn { background: #f3ba2f; color: black; border: none; padding: 16px; border-radius: 12px; font-size: 16px; font-weight: 700; cursor: pointer; margin: 20px; transition: 0.3s; }
         .save-btn:active { transform: scale(0.98); }
     </style>
 </head>
@@ -119,9 +73,7 @@
 
     <div class="container">
         <div class="header">
-            <a href="javascript:history.back()" class="back-btn">
-                <i class="fa-solid fa-arrow-left"></i>
-            </a>
+            <a href="javascript:history.back()" class="back-btn"><i class="fa-solid fa-arrow-left"></i></a>
             <h2 id="displayHeader">My Account</h2>
         </div>
 
@@ -182,7 +134,6 @@
 
         let currentUser = null;
         let currentRefCode = null;
-        
         const exchangeRate = 1 / 400; 
 
         async function loadProfile() {
@@ -220,14 +171,33 @@
             }
         }
 
+        // Real-time Update Logic
         function setupRealtime() {
+            _supabase.removeAllChannels(); // Purge old listeners
+
             _supabase
                 .channel('profile_updates')
                 .on('postgres_changes', { 
-                    event: 'UPDATE', schema: 'public', table: 'profiles',
+                    event: 'UPDATE', 
+                    schema: 'public', 
+                    table: 'profiles',
                     filter: `id=eq.${currentUser.id}` 
                 }, payload => {
                     updateUI(payload.new);
+                    
+                    // Show a quick toast when balance changes
+                    const Toast = Swal.mixin({
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 2500,
+                        background: '#1a1a1a',
+                        color: '#fff'
+                    });
+                    Toast.fire({
+                        icon: 'success',
+                        title: 'Balance Updated!'
+                    });
                 })
                 .subscribe();
         }
