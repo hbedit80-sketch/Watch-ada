@@ -21,7 +21,6 @@
             display: flex; flex-direction: column; align-items: center; gap: 8px;
         }
 
-        /* Coins Display Style */
         .coin-display {
             display: flex; align-items: center; gap: 8px;
             background: rgba(255, 255, 255, 0.1);
@@ -64,7 +63,7 @@
             </div>
 
             <div class="currency-selector" onclick="openCurrencyPicker()">
-                <span id="selectedCurrencyName">British Pound</span> <i class="fa-solid fa-caret-down"></i>
+                <span id="selectedCurrencyName">Nepalese Rupee</span> <i class="fa-solid fa-caret-down"></i>
             </div>
 
             <div class="balance-text" id="balanceDisplay">Loading...</div>
@@ -90,20 +89,20 @@
         const _supabase = supabase.createClient(SB_URL, SB_KEY);
 
         let totalCoins = 0; 
-        let currentCurrencyCode = "GBP";
+        let currentCurrencyCode = "NPR"; // Default currency set to NPR
 
-        // कन्भर्सन रेट (१ GBP = १००० Coins मानिएको छ)
-        const coinToGbpRate = 0.001; 
+        // SAFE RATE: 400 Coins = 1 NPR
+        const coinToNprRate = 0.0025; 
 
         const currencies = {
-            "GBP": { name: "British Pound", symbol: "£", rate: 1 },
-            "USD": { name: "US Dollar", symbol: "$", rate: 1.25 },
-            "EUR": { name: "Euro", symbol: "€", rate: 1.15 },
-            "NPR": { name: "Nepalese Rupee", symbol: "Rs", rate: 165.50 },
-            "INR": { name: "Indian Rupee", symbol: "₹", rate: 104.20 },
-            "AED": { name: "UAE Dirham", symbol: "DH", rate: 4.60 },
-            "MYR": { name: "Malaysian Ringgit", symbol: "RM", rate: 5.90 },
-            "USDT": { name: "USDT (Crypto)", symbol: "₮", rate: 1.25 }
+            "NPR": { name: "Nepalese Rupee", symbol: "Rs", rate: 1 },
+            "INR": { name: "Indian Rupee", symbol: "₹", rate: 0.62 },
+            "USD": { name: "US Dollar", symbol: "$", rate: 0.0075 },
+            "GBP": { name: "British Pound", symbol: "£", rate: 0.0060 },
+            "EUR": { name: "Euro", symbol: "€", rate: 0.0070 },
+            "AED": { name: "UAE Dirham", symbol: "DH", rate: 0.027 },
+            "MYR": { name: "Malaysian Ringgit", symbol: "RM", rate: 0.035 },
+            "USDT": { name: "USDT (Crypto)", symbol: "₮", rate: 0.0075 }
         };
 
         async function fetchUserData() {
@@ -123,7 +122,6 @@
 
                 totalCoins = data ? (data.balance || 0) : 0;
                 
-                // UI अपडेट गर्ने
                 document.getElementById('coinDisplay').innerText = totalCoins.toLocaleString();
                 updateBalance(currentCurrencyCode);
 
@@ -156,9 +154,10 @@
 
         function updateBalance(code) {
             const currency = currencies[code];
-            // पहिले Coins लाई GBP मा लैजाने, त्यसपछि छानिएको देशको दरले गुणा गर्ने
-            const amountInGbp = totalCoins * coinToGbpRate;
-            const finalAmount = (amountInGbp * currency.rate).toFixed(2);
+            // Step 1: Coins to NPR
+            const amountInNpr = totalCoins * coinToNprRate;
+            // Step 2: NPR to selected currency
+            const finalAmount = (amountInNpr * currency.rate).toFixed(2);
 
             document.getElementById('selectedCurrencyName').innerText = currency.name;
             document.getElementById('balanceDisplay').innerText = `${currency.symbol} ${finalAmount}`;
