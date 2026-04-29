@@ -5,157 +5,42 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Settings</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        body {
-            background-color: #0b0b0b;
-            color: #ffffff;
-            display: flex;
-            justify-content: center;
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
-
-        .container {
-            width: 100%;
-            max-width: 450px;
-            display: flex;
-            flex-direction: column;
-            padding: 0 20px 30px 20px;
-            position: relative;
-        }
-
-        .header {
-            display: flex;
-            align-items: center;
-            padding: 20px 0;
-            margin-bottom: 10px;
-        }
-
-        .back-btn {
-            color: #ffffff;
-            font-size: 18px;
-            text-decoration: none;
-            width: 30px;
-            cursor: pointer;
-        }
-
-        .header h2 {
-            flex: 1;
-            font-size: 20px;
-            font-weight: 500;
-            text-align: center;
-            margin-right: 30px;
-        }
-
-        .settings-list {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            flex-grow: 1;
-        }
-
-        .setting-item {
-            background-color: #1a1a1a;
-            padding: 18px 20px;
-            border-radius: 14px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            cursor: pointer;
-            transition: background 0.2s;
-            text-decoration: none;
-            color: inherit;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background-color: #0b0b0b; color: #ffffff; display: flex; justify-content: center; min-height: 100vh; overflow-x: hidden; }
+        .container { width: 100%; max-width: 450px; display: flex; flex-direction: column; padding: 0 20px 30px 20px; position: relative; }
+        .header { display: flex; align-items: center; padding: 20px 0; margin-bottom: 10px; }
+        .back-btn { color: #ffffff; font-size: 18px; text-decoration: none; width: 30px; cursor: pointer; }
+        .header h2 { flex: 1; font-size: 20px; font-weight: 500; text-align: center; margin-right: 30px; }
+        .settings-list { display: flex; flex-direction: column; gap: 12px; flex-grow: 1; }
+        .setting-item { background-color: #1a1a1a; padding: 18px 20px; border-radius: 14px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: background 0.2s; text-decoration: none; color: inherit; border: 1px solid #222; }
         .setting-item:active { background-color: #252525; }
-
-        .left-content {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
+        .left-content { display: flex; align-items: center; gap: 15px; }
         .setting-item i { font-size: 18px; width: 20px; text-align: center; }
         .setting-item span { font-size: 16px; font-weight: 500; }
         .arrow-right { font-size: 14px; color: #888; }
-
-        .switch {
-            position: relative;
-            display: inline-block;
-            width: 46px;
-            height: 26px;
-        }
-
+        .switch { position: relative; display: inline-block; width: 46px; height: 26px; }
         .switch input { opacity: 0; width: 0; height: 0; }
-
-        .slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background-color: #333;
-            transition: .4s;
-            border-radius: 34px;
-        }
-
-        .slider:before {
-            position: absolute;
-            content: "";
-            height: 20px; width: 20px;
-            left: 3px; bottom: 3px;
-            background-color: white;
-            transition: .4s;
-            border-radius: 50%;
-        }
-
-        input:checked + .slider { background-color: #6c4ab6; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #333; transition: .4s; border-radius: 34px; }
+        .slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: #2196f3; }
         input:checked + .slider:before { transform: translateX(20px); }
-
         .logout-text { color: #ff4d4d; }
-
         .delete-container { margin-top: 50px; }
-
-        .delete-btn {
-            width: 100%;
-            padding: 16px;
-            background-color: transparent;
-            border: 1px solid #ff4d4d33;
-            color: #ff4d4d;
-            border-radius: 12px;
-            font-size: 16px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
+        .delete-btn { width: 100%; padding: 16px; background-color: transparent; border: 1px solid #ff4d4d33; color: #ff4d4d; border-radius: 12px; font-size: 16px; font-weight: 500; cursor: pointer; transition: all 0.2s; }
         .delete-btn:active { background-color: #ff4d4d11; }
-
-        /* Custom SweetAlert Styling to match your UI */
-        .swal2-popup {
-            background-color: #1a1a1a !important;
-            color: #ffffff !important;
-            border-radius: 15px !important;
-        }
-        .swal2-title, .swal2-html-container { color: #ffffff !important; }
-        .swal2-confirm { background-color: #6c4ab6 !important; border-radius: 8px !important; }
-        .swal2-deny { background-color: #ff4d4d !important; }
+        .swal2-popup { background-color: #1a1a1a !important; color: #ffffff !important; border-radius: 15px !important; }
     </style>
 </head>
 <body>
 
     <div class="container">
         <div class="header">
-            <a href="index.html" class="back-btn">
-                <i class="fa-solid fa-arrow-left"></i>
-            </a>
+            <a href="index.html" class="back-btn"><i class="fa-solid fa-arrow-left"></i></a>
             <h2>Settings</h2>
         </div>
 
@@ -163,7 +48,7 @@
             
             <div class="setting-item">
                 <div class="left-content">
-                    <i class="fa-solid fa-bell"></i>
+                    <i class="fa-solid fa-bell" style="color: #2196f3;"></i>
                     <span>Notifications</span>
                 </div>
                 <label class="switch">
@@ -172,9 +57,17 @@
                 </label>
             </div>
 
+            <a href="privacy.html" class="setting-item">
+                <div class="left-content">
+                    <i class="fa-solid fa-shield-halved" style="color: #4caf50;"></i>
+                    <span>Privacy Policy</span>
+                </div>
+                <i class="fa-solid fa-chevron-right arrow-right"></i>
+            </a>
+
             <a href="about.html" class="setting-item">
                 <div class="left-content">
-                    <i class="fa-solid fa-circle-info"></i>
+                    <i class="fa-solid fa-circle-info" style="color: #ffb300;"></i>
                     <span>About Us</span>
                 </div>
                 <i class="fa-solid fa-chevron-right arrow-right"></i>
@@ -182,7 +75,7 @@
 
             <a href="change-password.html" class="setting-item">
                 <div class="left-content">
-                    <i class="fa-solid fa-lock"></i>
+                    <i class="fa-solid fa-lock" style="color: #9c27b0;"></i>
                     <span>Change Password</span>
                 </div>
                 <i class="fa-solid fa-chevron-right arrow-right"></i>
@@ -204,27 +97,44 @@
     </div>
 
     <script>
-        // Professional Logout without localhost text
-        function handleLogout() {
+        // १. सुपाबेस कन्फिग
+        const SB_URL = "https://ryklvvbhfrlrwqxswydh.supabase.co";
+        const SB_KEY = "sb_publishable_MCd04uSNUXad3nPvy28dug_85fvcUwj"; 
+        const _supabase = supabase.createClient(SB_URL, SB_KEY);
+
+        // २. लगआउट फङ्सन (सुपाबेस लगआउट)
+        async function handleLogout() {
             Swal.fire({
                 title: 'Are you sure?',
                 text: "Do you want to log out?",
                 icon: 'question',
                 showCancelButton: true,
-                confirmButtonColor: '#6c4ab6',
+                confirmButtonColor: '#2196f3',
                 cancelButtonColor: '#333',
                 confirmButtonText: 'Yes, Logout',
                 background: '#1a1a1a',
                 color: '#fff'
-            }).then((result) => {
+            }).then(async (result) => {
                 if (result.isConfirmed) {
-                    window.location.href = "auth.html";
+                    const { error } = await _supabase.auth.signOut();
+                    if (error) {
+                        Swal.fire('Error', error.message, 'error');
+                    } else {
+                        window.location.href = "auth.html";
+                    }
                 }
             });
         }
 
-        // Professional Delete Account with custom input
-        function handleDeleteAccount() {
+        // ३. अकाउन्ट डिलिट (रिक्वेस्ट पठाउने)
+        async function handleDeleteAccount() {
+            const { data: { user } } = await _supabase.auth.getUser();
+            
+            if (!user) {
+                window.location.href = "auth.html";
+                return;
+            }
+
             Swal.fire({
                 title: 'Delete Account?',
                 text: "To confirm, please type 'DELETE':",
@@ -241,11 +151,22 @@
                         Swal.showValidationMessage('Please type DELETE correctly');
                     }
                 }
-            }).then((result) => {
+            }).then(async (result) => {
                 if (result.isConfirmed) {
+                    // अकाउन्ट डिलिट गर्ने एउटा रिक्वेस्ट एडमिनलाई पठाउने
+                    const { error } = await _supabase
+                        .from('withdrawals') // अथवा नयाँ 'support_tickets' टेबल प्रयोग गर्न सक्नुहुन्छ
+                        .insert([{
+                            user_id: user.id,
+                            method: 'ACCOUNT_DELETE_REQUEST',
+                            wallet_id: user.email,
+                            status: 'pending',
+                            amount: 0
+                        }]);
+
                     Swal.fire({
                         title: 'Requested!',
-                        text: 'Account deletion request submitted.',
+                        text: 'Your deletion request has been submitted. It will be processed within 48 hours.',
                         icon: 'success',
                         background: '#1a1a1a',
                         color: '#fff'
@@ -255,13 +176,8 @@
         }
 
         document.getElementById('notiToggle').addEventListener('change', function() {
-            if(this.checked) {
-                console.log("Notifications Enabled");
-            } else {
-                console.log("Notifications Disabled");
-            }
+            localStorage.setItem('notifications', this.checked);
         });
     </script>
-
 </body>
 </html>
