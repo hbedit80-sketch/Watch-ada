@@ -29,8 +29,8 @@
         .avatar-container { 
             position: relative; 
             margin-bottom: 20px; 
-            width: 120px; 
-            height: 120px; 
+            width: 110px; 
+            height: 110px; 
         }
         
         .avatar { 
@@ -40,27 +40,29 @@
         
         .edit-avatar { 
             position: absolute; bottom: 5px; right: 5px; background-color: #f3ba2f; 
-            color: black; width: 34px; height: 34px; border-radius: 50%; 
+            color: black; width: 32px; height: 32px; border-radius: 50%; 
             display: flex; align-items: center; justify-content: center; font-size: 12px; 
             border: 3px solid #0b0b0b; cursor: pointer; 
         }
 
-        /* Stats Section - New Layout */
         .stats-grid { 
-            display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 100%; padding: 0 20px; margin-bottom: 20px;
+            display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; padding: 0 20px; margin-bottom: 20px;
         }
         .stat-card { 
-            background: #161616; border: 1px solid #2a2a2a; padding: 15px; border-radius: 16px; 
+            background: #161616; border: 1px solid #2a2a2a; padding: 12px; border-radius: 14px; 
             display: flex; flex-direction: column; align-items: center; text-align: center;
+            transition: 0.2s; cursor: pointer;
         }
-        .stat-card i { font-size: 20px; margin-bottom: 8px; }
-        .val { font-size: 18px; font-weight: 700; color: #fff; }
-        .lab { font-size: 10px; color: #888; text-transform: uppercase; letter-spacing: 1px; margin-top: 2px; }
+        .stat-card:active { transform: scale(0.95); }
+        .stat-card i { font-size: 18px; margin-bottom: 6px; }
+        .val { font-size: 16px; font-weight: 700; color: #fff; }
+        .lab { font-size: 9px; color: #888; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px; }
 
         .c-coin { color: #f3ba2f; }
         .c-money { color: #4caf50; }
         .c-ref { color: #2196f3; }
         .c-share { color: #ff9800; }
+        .c-dl { color: #e91e63; }
 
         .profile-form { padding: 10px 20px; display: flex; flex-direction: column; gap: 15px; }
         .input-group { display: flex; flex-direction: column; gap: 5px; }
@@ -113,7 +115,12 @@
             <div class="stat-card" onclick="copyLink()">
                 <i class="fa-solid fa-share-nodes c-share"></i>
                 <span class="val">Share</span>
-                <span class="lab">Invite link</span>
+                <span class="lab">Invite Link</span>
+            </div>
+            <div class="stat-card" style="grid-column: span 2;" onclick="window.open('https://hbedit80-sketch.github.io/Watch-ada/', '_blank')">
+                <i class="fa-solid fa-cloud-arrow-down c-dl"></i>
+                <span class="val">Download App</span>
+                <span class="lab">Get Official HB Edit App</span>
             </div>
         </div>
 
@@ -139,8 +146,7 @@
         let currentUser = null;
         let currentRefCode = null;
         
-        // विनिमय दर: १ कोइन = रू ०.१० (अर्थात् १० कोइन = रू १)
-        const exchangeRate = 0.10; 
+        const exchangeRate = 1 / 400; 
 
         async function loadProfile() {
             const { data: { user } } = await _supabase.auth.getUser();
@@ -164,7 +170,7 @@
 
         function updateUI(data) {
             const coins = data.balance || 0;
-            const money = (coins * exchangeRate).toFixed(2); // पैसा हिसाब गर्ने
+            const money = (coins * exchangeRate).toFixed(2); 
 
             document.getElementById('displayHeader').innerText = data.full_name || "My Profile";
             document.getElementById('fullName').value = data.full_name || "";
@@ -225,7 +231,7 @@
                 Swal.fire({
                     icon: 'success',
                     title: 'Link Copied!',
-                    text: 'Refer a friend to get 50 coins (रू 5)!',
+                    text: 'Refer a friend to get 50 coins!',
                     background: '#1a1a1a', color: '#fff', confirmButtonColor: '#f3ba2f'
                 });
             });
