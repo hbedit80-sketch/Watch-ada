@@ -3,82 +3,100 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Profile UI</title>
+    <title>Profile - Real Time System</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; -webkit-tap-highlight-color: transparent; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; -webkit-tap-highlight-color: transparent; }
         body { background-color: #0b0b0b; color: #ffffff; display: flex; justify-content: center; min-height: 100vh; }
         
-        .container { 
-            width: 100%; max-width: 450px; 
-            background-color: #0b0b0b; 
-            display: flex; flex-direction: column; 
-            min-height: 100vh;
-            padding-bottom: 30px; /* तल अलिकति ठाउँ छोडिएको */
-        }
+        .container { width: 100%; max-width: 450px; background-color: #0b0b0b; display: flex; flex-direction: column; min-height: 100vh; padding-bottom: 30px; }
 
-        .header { 
-            display: flex; align-items: center; 
-            padding: 15px 20px; background-color: #0b0b0b; 
-            border-bottom: 1px solid #1a1a1a; 
-            position: sticky; top: 0; z-index: 100;
-        }
+        .header { display: flex; align-items: center; padding: 15px 20px; background-color: rgba(11, 11, 11, 0.95); border-bottom: 1px solid #1a1a1a; position: sticky; top: 0; z-index: 100; backdrop-filter: blur(10px); }
+        .header h2 { flex: 1; font-size: 18px; font-weight: 600; text-align: center; }
 
-        .back-btn { color: #ffffff; font-size: 20px; text-decoration: none; cursor: pointer; width: 40px; }
-        .header h2 { flex: 1; font-size: 20px; font-weight: 500; text-align: center; margin-right: 40px; }
+        .profile-top { display: flex; flex-direction: column; align-items: center; padding: 25px 20px; background: linear-gradient(180deg, #161616 0%, #0b0b0b 100%); border-bottom: 1px solid #1a1a1a; }
 
-        .profile-form { padding: 25px 20px; display: flex; flex-direction: column; gap: 20px; flex-grow: 1; }
+        .avatar-container { position: relative; margin-bottom: 20px; width: 100px; height: 100px; }
+        .avatar { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 3px solid #f3ba2f; }
         
-        .input-group { display: flex; flex-direction: column; gap: 10px; }
-        .input-group label { color: #888; font-size: 14px; margin-left: 5px; }
-        
-        .input-group input { 
-            background-color: #1a1a1a; border: 1px solid #2a2a2a; 
-            color: #ffffff; padding: 16px; border-radius: 12px; 
-            font-size: 16px; outline: none; width: 100%; 
-            transition: border-color 0.3s;
-        }
+        .edit-avatar { position: absolute; bottom: 0; right: 0; background-color: #f3ba2f; color: black; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; border: 3px solid #0b0b0b; cursor: pointer; }
 
-        .input-group input:focus { border-color: #2196f3; }
-        .input-group input:disabled { color: #666; background-color: #0d0d0d; border-color: #111; }
+        .stats-container { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; max-width: 380px; }
+        .stat-box { background: #161616; border: 1px solid #2a2a2a; padding: 15px 8px; border-radius: 14px; display: flex; flex-direction: column; align-items: center; text-align: center; transition: 0.3s; cursor: pointer; }
+        .stat-box:active { transform: scale(0.95); border-color: #f3ba2f; }
 
-        .save-btn { 
-            background-color: #2196f3; color: white; border: none; 
-            padding: 16px; border-radius: 12px; font-size: 18px; 
-            font-weight: 600; cursor: pointer; 
-            margin: 20px; /* बटनलाई अलि माथि सारिएको */
-            transition: 0.3s;
-        }
+        .stat-icon { font-size: 18px; margin-bottom: 6px; }
+        .stat-value { font-size: 16px; font-weight: 700; color: #ffffff; margin-bottom: 2px; }
+        .stat-label { font-size: 9px; color: #aaa; text-transform: uppercase; letter-spacing: 0.5px; }
 
-        .save-btn:active { transform: scale(0.98); }
-        .save-btn:disabled { background-color: #555; cursor: not-allowed; }
+        .referral-icon { color: #2196f3; }
+        .balance-icon { color: #f3ba2f; }
+        .link-icon { color: #ff9800; }
+        .download-icon { color: #e91e63; }
 
-        .swal2-popup { background: #1a1a1a !important; color: #fff !important; }
+        .profile-form { padding: 20px; display: flex; flex-direction: column; gap: 15px; }
+        .input-group { display: flex; flex-direction: column; gap: 6px; }
+        .input-group label { color: #aaa; font-size: 12px; margin-left: 5px; }
+        .input-group input { background-color: #1a1a1a; border: 1px solid #2a2a2a; color: #ffffff; padding: 14px; border-radius: 12px; font-size: 14px; outline: none; transition: 0.3s; }
+        .input-group input:focus { border-color: #f3ba2f; }
+
+        .save-btn { background: #f3ba2f; color: black; border: none; padding: 15px; border-radius: 12px; font-size: 16px; font-weight: 700; cursor: pointer; margin: 10px 20px; transition: 0.3s; }
+        .save-btn:active { transform: scale(0.98); opacity: 0.9; }
     </style>
 </head>
 <body>
 
     <div class="container">
         <div class="header">
-            <a href="index.html" class="back-btn">
-                <i class="fa-solid fa-arrow-left"></i>
-            </a>
-            <h2>Profile Settings</h2>
+            <h2 id="displayHeader">My Profile</h2>
+        </div>
+
+        <div class="profile-top">
+            <div class="avatar-container">
+                <img src="https://via.placeholder.com/150/333/ffffff?text=?" alt="Profile" class="avatar" id="profileAvatar">
+                <label for="avatarInput" class="edit-avatar"><i class="fa-solid fa-camera"></i></label>
+                <input type="file" id="avatarInput" style="display:none;" accept="image/*" onchange="uploadAvatar(this)">
+            </div>
+
+            <div class="stats-container">
+                <div class="stat-box">
+                    <i class="fa-solid fa-users stat-icon referral-icon"></i>
+                    <span class="stat-value" id="countReferrals">0</span>
+                    <span class="stat-label">Referrals</span>
+                </div>
+                
+                <div class="stat-box">
+                    <i class="fa-solid fa-coins stat-icon balance-icon"></i>
+                    <span class="stat-value" id="countBalance">0</span>
+                    <span class="stat-label">Balance</span>
+                </div>
+
+                <div class="stat-box" onclick="copyLink()">
+                    <i class="fa-solid fa-share-nodes stat-icon link-icon"></i>
+                    <span class="stat-value">Share</span>
+                    <span class="stat-label">Invite Link</span>
+                </div>
+
+                <div class="stat-box" onclick="window.open('https://your-app-link.com', '_blank')">
+                    <i class="fa-solid fa-download stat-icon download-icon"></i>
+                    <span class="stat-value">App</span>
+                    <span class="stat-label">Download Now</span>
+                </div>
+            </div>
         </div>
 
         <div class="profile-form">
             <div class="input-group">
-                <label><i class="fa-solid fa-user"></i> Full Name</label>
+                <label>Full Name</label>
                 <input type="text" id="fullName" placeholder="Enter your name">
             </div>
-
             <div class="input-group">
-                <label><i class="fa-solid fa-envelope"></i> Email (Cannot change)</label>
-                <input type="email" id="email" disabled>
+                <label>Phone Number (Read only)</label>
+                <input type="text" id="phone" value="..." disabled>
             </div>
         </div>
 
@@ -86,80 +104,85 @@
     </div>
 
     <script>
-        // १. सुपाबेस कन्फिगरेसन
         const SB_URL = "https://ryklvvbhfrlrwqxswydh.supabase.co";
-        const SB_KEY = "sb_publishable_MCd04uSNUXad3nPvy28dug_85fvcUwj";
+        const SB_KEY = "sb_publishable_MCd04uSNUXad3nPvy28dug_85fvcUwj"; 
         const _supabase = supabase.createClient(SB_URL, SB_KEY);
 
         let currentUser = null;
 
-        // २. युजरको प्रोफाइल डाटा लोड गर्ने
+        // १. रियल टाइम डाटा लोड गर्ने
         async function loadProfile() {
-            const { data: { user }, error: authError } = await _supabase.auth.getUser();
-
-            if (!user) {
-                window.location.href = "login.html"; // लगइन छैन भने पठाउने
-                return;
-            }
-
+            const { data: { user } } = await _supabase.auth.getUser();
+            if (!user) { window.location.href = "login.html"; return; }
             currentUser = user;
-            document.getElementById('email').value = user.email;
 
-            // profiles टेबलबाट नाम खोज्ने
             const { data, error } = await _supabase
                 .from('profiles')
-                .select('full_name')
+                .select('*')
                 .eq('id', user.id)
-                .maybeSingle();
+                .single();
 
-            if (data && data.full_name) {
-                document.getElementById('fullName').value = data.full_name;
+            if (data) {
+                document.getElementById('displayHeader').innerText = data.full_name || "Profile";
+                document.getElementById('fullName').value = data.full_name || "";
+                document.getElementById('phone').value = data.phone || "No Phone";
+                document.getElementById('countReferrals').innerText = data.total_refer || 0;
+                document.getElementById('countBalance').innerText = data.balance || 0;
+                
+                if (data.avatar_url) {
+                    document.getElementById('profileAvatar').src = data.avatar_url;
+                }
             }
         }
 
-        // ३. डाटा सेभ गर्ने
+        // २. नाम अपडेट गर्ने
         async function saveData() {
+            const newName = document.getElementById('fullName').value;
             const btn = document.getElementById('saveBtn');
-            const newName = document.getElementById('fullName').value.trim();
-
-            if (!newName) {
-                Swal.fire('Error', 'Please enter your name', 'error');
-                return;
-            }
-
-            btn.innerText = "Updating...";
-            btn.disabled = true;
-
-            // profiles टेबलमा डाटा अपडेट वा इन्सर्ट गर्ने
+            btn.innerText = "Saving...";
+            
             const { error } = await _supabase
                 .from('profiles')
-                .upsert({ 
-                    id: currentUser.id, 
-                    full_name: newName,
-                    updated_at: new Date()
-                });
+                .update({ full_name: newName })
+                .eq('id', currentUser.id);
 
             if (error) {
-                Swal.fire('Failed', error.message, 'error');
-                btn.innerText = "Save Changes";
-                btn.disabled = false;
+                Swal.fire('Error', 'Update failed!', 'error');
             } else {
-                Swal.fire({
-                    title: 'Success!',
-                    text: 'Profile updated successfully',
-                    icon: 'success',
-                    confirmButtonColor: '#2196f3'
-                });
-                
-                btn.innerText = "Saved!";
-                btn.style.backgroundColor = "#4caf50";
-                
-                setTimeout(() => {
-                    btn.innerText = "Save Changes";
-                    btn.style.backgroundColor = "#2196f3";
-                    btn.disabled = false;
-                }, 2000);
+                Swal.fire({ title: 'Saved!', icon: 'success', timer: 1500, showConfirmButton: false });
+                loadProfile();
             }
+            btn.innerText = "Save Changes";
+        }
+
+        // ३. फोटो अपलोड सिमुलेशन (तपाईंको बाल्टी/Storage अनुसार)
+        async function uploadAvatar(input) {
+            if (input.files && input.files[0]) {
+                Swal.fire('Processing...', 'Uploading photo', 'info');
+                // यहाँ Supabase Storage मा फोटो अपलोड गर्ने लजिक थप्न सकिन्छ।
+                // अहिलेलाई केवल प्रिभ्यु:
+                const reader = new FileReader();
+                reader.onload = (e) => document.getElementById('profileAvatar').src = e.target.result;
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        // ४. रेफरल लिङ्क कपी
+        function copyLink() {
+            const phone = document.getElementById('phone').value;
+            const refLink = `https://harish177.com.np/register.html?ref=${phone}`;
+            
+            navigator.clipboard.writeText(refLink).then(() => {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Copied!',
+                    text: 'Invite your friends to earn.',
+                    toast: true,
+                    position: 'top',
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+            });
         }
 
         window.onload = loadProfile;
