@@ -76,7 +76,7 @@
         const _supabase = supabase.createClient(SB_URL, SB_KEY);
 
         const MONETAG_LINK = "https://omg10.com/4/10807361"; 
-        const REWARD_PER_AD = 5; // यहाँ 10 बाट घटाएर 5 बनाइएको छ
+        const REWARD_PER_AD = 25; // यहाँ ५ बाट बढाएर २५ बनाइएको छ
         const ONE_HOUR = 60 * 60 * 1000; 
 
         let currentBalance = 0; 
@@ -115,6 +115,7 @@
 
         function refreshUI() {
             document.getElementById('userBalance').innerText = currentBalance;
+            // यहाँ १००० कोइन = १ डलर मानिएको छ, तपाईँले आफ्नो दर अनुसार फेर्न सक्नुहुन्छ
             document.getElementById('dollarAmount').innerText = (currentBalance / 1000).toFixed(3);
         }
 
