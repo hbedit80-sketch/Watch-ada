@@ -3,245 +3,159 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Complete Tasks</title>
+    <title>Complete Tasks - 150 Ads</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        body {
-            background-color: #f4f7f9;
-            color: #333;
-            display: flex;
-            justify-content: center;
-            min-height: 100vh;
-        }
-
-        .container {
-            width: 100%;
-            max-width: 450px;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* --- Header & Back Button Styling --- */
-        .header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 25px;
-            gap: 15px;
-        }
-
-        .back-btn {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 40px;
-            height: 40px;
-            background: #ffffff;
-            border-radius: 50%;
-            color: #333;
-            text-decoration: none;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            transition: background 0.3s;
-        }
-
-        .back-btn:active {
-            background: #eef1f3;
-            transform: scale(0.95);
-        }
-
-        .header h2 {
-            font-size: 20px;
-            font-weight: 600;
-            color: #1a1a1a;
-        }
-        /* ---------------------------------- */
-
-        .task-card {
-            background: #ffffff;
-            border-radius: 20px;
-            padding: 15px;
-            display: flex;
-            align-items: center;
-            margin-bottom: 15px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-            transition: transform 0.2s;
-        }
-
-        .task-card:active {
-            transform: scale(0.98);
-        }
-
-        .task-icon {
-            width: 60px;
-            height: 60px;
-            background: #f8f9fa;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-right: 15px;
-        }
-
-        .task-icon img {
-            width: 40px;
-            height: 40px;
-            object-fit: contain;
-        }
-
-        .task-info {
-            flex: 1;
-        }
-
-        .task-info h3 {
-            font-size: 16px;
-            font-weight: 600;
-            margin-bottom: 4px;
-        }
-
-        .task-info p {
-            font-size: 13px;
-            color: #777;
-            line-height: 1.4;
-        }
-
-        .reward-tag {
-            display: flex;
-            align-items: center;
-            font-size: 14px;
-            font-weight: bold;
-            color: #333;
-            margin-top: 5px;
-        }
-
-        .reward-tag img {
-            width: 18px;
-            margin-right: 5px;
-        }
-
-        .claim-btn {
-            background-color: #4caf50;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 12px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            box-shadow: 0 4px 10px rgba(76, 175, 80, 0.3);
-        }
-
-        .claim-btn.disabled {
-            background-color: #e0e0e0;
-            color: #999;
-            box-shadow: none;
-            cursor: not-allowed;
-        }
-
-        .swal2-popup {
-            border-radius: 20px !important;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background-color: #f4f7f9; color: #333; padding-bottom: 20px; }
+        .container { width: 100%; max-width: 450px; margin: auto; padding: 15px; }
+        .header { display: flex; align-items: center; margin-bottom: 20px; gap: 15px; position: sticky; top: 0; background: #f4f7f9; padding: 10px 0; z-index: 100; }
+        .back-btn { display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; background: #fff; border-radius: 50%; color: #333; text-decoration: none; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .header h2 { font-size: 19px; font-weight: 700; color: #1a1a1a; }
+        .task-card { background: #fff; border-radius: 20px; padding: 15px; display: flex; align-items: center; margin-bottom: 15px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); }
+        .task-icon { width: 55px; height: 55px; background: #fff5f2; border-radius: 50%; display: flex; justify-content: center; align-items: center; margin-right: 15px; }
+        .task-icon i { font-size: 24px; color: #ff6347; }
+        .task-info { flex: 1; }
+        .task-info h3 { font-size: 15px; font-weight: 600; margin-bottom: 2px; }
+        .task-info p { font-size: 12px; color: #777; }
+        .reward-tag { display: flex; align-items: center; font-size: 13px; font-weight: bold; color: #333; margin-top: 4px; }
+        .reward-tag i { color: #ffd700; margin-right: 5px; }
+        .btn-container { min-width: 100px; text-align: right; }
+        .claim-btn { background-color: #4caf50; color: white; border: none; padding: 8px 16px; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; box-shadow: 0 4px 10px rgba(76, 175, 80, 0.3); animation: pulse 1.5s infinite; }
+        .earn-btn { background-color: #ff6347; color: white; border: none; padding: 8px 16px; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; }
+        .timer-text { font-size: 12px; color: #ff6347; font-weight: bold; }
+        .completed-btn { background-color: #e0e0e0; color: #999; border: none; padding: 8px 16px; border-radius: 10px; cursor: not-allowed; }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
     </style>
 </head>
 <body>
 
     <div class="container">
         <div class="header">
-            <a href="javascript:history.back()" class="back-btn">
-                <i class="fa-solid fa-arrow-left"></i>
-            </a>
-            <h2>Complete tasks & earn rewards</h2>
+            <a href="index.html" class="back-btn"><i class="fa-solid fa-arrow-left"></i></a>
+            <h2>Complete 150 Tasks</h2>
         </div>
-
-        <div class="task-card">
-            <div class="task-icon"><img src="https://cdn-icons-png.flaticon.com/512/1043/1043431.png" alt="Luck"></div>
-            <div class="task-info">
-                <h3>Try Your Luck</h3>
-                <p>Open once daily & win 5,000 - 20,000 Points</p>
-            </div>
-            <button class="claim-btn" onclick="showAdAndClaim('Try Your Luck', 20)">Claim</button>
-        </div>
-
-        <div class="task-card">
-            <div class="task-icon"><img src="https://cdn-icons-png.flaticon.com/512/3100/3100566.png" alt="Water"></div>
-            <div class="task-info">
-                <h3>Drink Water</h3>
-                <p>Stay hydrated & earn 10,000 Points</p>
-                <div class="reward-tag"><img src="https://cdn-icons-png.flaticon.com/512/217/217853.png"> 10,000</div>
-            </div>
-            <button class="claim-btn" onclick="showAdAndClaim('Drink Water', 10000)">Claim</button>
-        </div>
-
-        <div class="task-card">
-            <div class="task-icon"><img src="https://cdn-icons-png.flaticon.com/512/3241/3241258.png" alt="Walk"></div>
-            <div class="task-info">
-                <h3>Walk 10 Minutes</h3>
-                <p>Walk daily & earn 10,000 Points</p>
-                <div class="reward-tag"><img src="https://cdn-icons-png.flaticon.com/512/217/217853.png"> 10,000</div>
-            </div>
-            <button class="claim-btn" onclick="showAdAndClaim('Walk 10 Minutes', 10000)">Claim</button>
-        </div>
-
-        <div class="task-card">
-            <div class="task-icon"><img src="https://cdn-icons-png.flaticon.com/512/2844/2844140.png" alt="Exercise"></div>
-            <div class="task-info">
-                <h3>Exercise 10 Minutes</h3>
-                <p>Next reward in 00:59:31</p>
-                <div class="reward-tag"><img src="https://cdn-icons-png.flaticon.com/512/217/217853.png"> 10,000</div>
-            </div>
-            <button class="claim-btn disabled">Claim</button>
-        </div>
-
-        <div class="task-card">
-            <div class="task-icon"><img src="https://cdn-icons-png.flaticon.com/512/1035/1035619.png" alt="Pray"></div>
-            <div class="task-info">
-                <h3>Pray 2 Minutes</h3>
-                <p>Pray & earn 20,000 Points</p>
-                <div class="reward-tag"><img src="https://cdn-icons-png.flaticon.com/512/217/217853.png"> 20,000</div>
-            </div>
-            <button class="claim-btn" onclick="showAdAndClaim('Pray 2 Minutes', 20000)">Claim</button>
-        </div>
-
+        <div id="mainTaskContainer"></div>
     </div>
 
     <script>
-        function showAdAndClaim(taskName, points) {
-            let timerInterval;
-            Swal.fire({
-                title: 'Loading Ad...',
-                html: 'Watching ad to claim points. Please wait <b></b>s.',
-                timer: 5000, 
-                timerProgressBar: true,
-                didOpen: () => {
-                    Swal.showLoading();
-                    const b = Swal.getHtmlContainer().querySelector('b');
-                    timerInterval = setInterval(() => {
-                        b.textContent = Math.ceil(Swal.getTimerLeft() / 1000);
-                    }, 100);
-                },
-                willClose: () => {
-                    clearInterval(timerInterval);
-                }
-            }).then((result) => {
-                if (result.dismiss === Swal.DismissReason.timer) {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Reward Claimed!',
-                        text: `You have earned ${points.toLocaleString()} points from "${taskName}".`,
-                        confirmButtonColor: '#4caf50'
-                    });
-                    console.log(`Points added: ${points}`);
-                }
-            });
+        // १. सुपाबेस सेटिङ
+        const SB_URL = "https://ryklvvbhfrlrwqxswydh.supabase.co";
+        const SB_KEY = "sb_publishable_MCd04uSNUXad3nPvy28dug_85fvcUwj"; 
+        const _supabase = supabase.createClient(SB_URL, SB_KEY);
+
+        const adUrl = "https://omg10.com/4/10807361";
+        const taskContainer = document.getElementById('mainTaskContainer');
+        
+        let currentUser = null;
+        let currentBalance = 0;
+
+        // २. युजरको डाटा चेक गर्ने
+        async function initTasks() {
+            const { data: { user } } = await _supabase.auth.getUser();
+            if (!user) {
+                window.location.href = "login.html"; // लगइन छैन भने पठाउने
+                return;
+            }
+            currentUser = user;
+
+            // हालको ब्यालेन्स तान्ने
+            const { data } = await _supabase
+                .from('profiles')
+                .select('balance')
+                .eq('id', user.id)
+                .maybeSingle();
+
+            if (data) {
+                currentBalance = data.balance || 0;
+            }
+
+            renderTaskCards();
         }
+
+        // ३. कार्डहरू जेनेरेट गर्ने
+        function renderTaskCards() {
+            taskContainer.innerHTML = "";
+            for (let i = 1; i <= 150; i++) {
+                const card = document.createElement('div');
+                card.className = 'task-card';
+                card.innerHTML = `
+                    <div class="task-icon"><i class="fa-solid fa-rectangle-ad"></i></div>
+                    <div class="task-info">
+                        <h3>Watch Ad #${i}</h3>
+                        <p>Click and wait 5s after return</p>
+                        <div class="reward-tag"><i class="fa-solid fa-coins"></i> 5 Coins</div>
+                    </div>
+                    <div class="btn-container" id="btn_box_${i}">
+                        <button class="earn-btn" onclick="startAdTask('${i}')">Watch</button>
+                    </div>
+                `;
+                taskContainer.appendChild(card);
+            }
+        }
+
+        function startAdTask(id) {
+            window.open(adUrl, '_blank');
+            const btnBox = document.getElementById(`btn_box_${id}`);
+            btnBox.innerHTML = `<span class="timer-text">Waiting...</span>`;
+
+            const checkReturn = setInterval(() => {
+                if (document.hasFocus()) {
+                    clearInterval(checkReturn);
+                    runTimer(id);
+                }
+            }, 600);
+        }
+
+        function runTimer(id) {
+            const btnBox = document.getElementById(`btn_box_${id}`);
+            let timeLeft = 5;
+            const timer = setInterval(() => {
+                btnBox.innerHTML = `<span class="timer-text">Wait ${timeLeft}s</span>`;
+                timeLeft--;
+                if (timeLeft < 0) {
+                    clearInterval(timer);
+                    btnBox.innerHTML = `<button class="claim-btn" onclick="claimReward('${id}')">Claim</button>`;
+                }
+            }, 1000);
+        }
+
+        // ४. ब्यालेन्स अपडेट गर्ने (Main Part)
+        async function claimReward(id) {
+            if (!currentUser) return;
+
+            const rewardAmount = 5;
+            const newBalance = currentBalance + rewardAmount;
+
+            const { error } = await _supabase
+                .from('profiles')
+                .upsert({ 
+                    id: currentUser.id, 
+                    balance: newBalance,
+                    updated_at: new Date() 
+                });
+
+            if (error) {
+                Swal.fire('Error', 'Update failed: ' + error.message, 'error');
+            } else {
+                currentBalance = newBalance; // स्थानीय ब्यालेन्स अपडेट
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success!',
+                    text: '5 Coins added to your balance.',
+                    confirmButtonColor: '#4caf50'
+                });
+
+                const btnBox = document.getElementById(`btn_box_${id}`);
+                btnBox.innerHTML = `<button class="completed-btn" disabled><i class="fa-solid fa-check"></i></button>`;
+            }
+        }
+
+        window.onload = initTasks;
     </script>
 </body>
 </html>
