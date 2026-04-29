@@ -14,17 +14,14 @@
         body { background-color: #000000; color: #ffffff; min-height: 100vh; display: flex; justify-content: center; }
         .container { width: 100%; max-width: 450px; background-color: #000000; display: flex; flex-direction: column; padding-bottom: 30px; }
         
-        /* Header Area */
         .header { display: flex; align-items: center; padding: 20px; position: sticky; top: 0; background: #000; z-index: 100; border-bottom: 1px solid #1a1a1a; }
         .back-btn { color: #ffffff; font-size: 20px; text-decoration: none; width: 40px; }
         .header h2 { flex: 1; font-size: 18px; font-weight: 600; text-align: center; margin-right: 40px; text-transform: uppercase; letter-spacing: 1px; }
 
-        /* Balance Section */
         .balance-card { background: linear-gradient(145deg, #1c1c1e, #0a0a0a); margin: 15px; padding: 20px; border-radius: 20px; border: 1px solid #f3ba2f44; text-align: center; position: sticky; top: 70px; z-index: 99; box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
         .amount { font-size: 32px; font-weight: 800; color: #f3ba2f; display: flex; justify-content: center; align-items: center; gap: 10px; }
         .dollar-value { font-size: 14px; color: #a1a1a6; background: rgba(255, 255, 255, 0.05); padding: 4px 15px; border-radius: 20px; margin-top: 8px; display: inline-block; font-weight: 500; }
 
-        /* Ad Boxes Grid */
         .reward-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; padding: 15px; }
 
         .reward-item { 
@@ -38,15 +35,13 @@
             cursor: pointer; 
             border: 1px solid #222; 
             transition: all 0.2s ease;
-            box-shadow: inset 0 0 10px rgba(243, 186, 47, 0.05);
         }
 
-        .reward-item:active { transform: scale(0.92); border-color: #f3ba2f; background: #1a1a1a; }
-        .reward-item i { font-size: 24px; color: #f3ba2f; margin-bottom: 6px; text-shadow: 0 0 10px rgba(243, 186, 47, 0.3); }
+        .reward-item:active { transform: scale(0.92); border-color: #f3ba2f; }
+        .reward-item i { font-size: 24px; color: #f3ba2f; margin-bottom: 6px; }
         .reward-item span { font-size: 10px; font-weight: 700; color: #888; text-transform: uppercase; }
         .coin-bonus { font-size: 11px; color: #4caf50; font-weight: bold; margin-top: 2px; }
 
-        /* Loading Overlay */
         .ad-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.95); display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 9999; }
         .loader { border: 3px solid #222; border-top: 3px solid #f3ba2f; border-radius: 50%; width: 45px; height: 45px; animation: spin 1s linear infinite; margin-bottom: 15px; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
@@ -63,8 +58,8 @@
 
         <div class="balance-card">
             <div class="amount"><i class="fa-solid fa-coins"></i> <span id="userBalance">...</span></div>
-            <div class="dollar-value">Current Value: $<span id="dollarAmount">0.00</span></div>
-            <p id="systemStatus" style="font-size: 11px; color: #888; margin-top: 8px;">Connecting to secure server...</p>
+            <div class="dollar-value">Value: $<span id="dollarAmount">0.00</span></div>
+            <p id="systemStatus" style="font-size: 11px; color: #888; margin-top: 8px;">Connecting...</p>
         </div>
 
         <div class="reward-grid" id="adGrid"></div>
@@ -72,34 +67,30 @@
 
     <div id="adOverlay" class="ad-overlay">
         <div class="loader"></div>
-        <p id="statusText">Redirecting to Ad Partner...</p>
+        <p id="statusText">Redirecting to Monetag Ad...</p>
     </div>
 
     <script>
-        // 1. Configuration
         const SB_URL = "https://ryklvvbhfrlrwqxswydh.supabase.co";
         const SB_KEY = "sb_publishable_MCd04uSNUXad3nPvy28dug_85fvcUwj"; 
         const _supabase = supabase.createClient(SB_URL, SB_KEY);
 
-        const MONETAG_LINK = "https://www.profitablecpmrate.com/your-direct-link-here"; 
+        // तपाईंको Monetag Direct Link यहाँ हालिएको छ
+        const MONETAG_LINK = "https://omg10.com/4/10807361"; 
         const REWARD_PER_AD = 10;
         const ONE_HOUR = 60 * 60 * 1000; 
 
         let currentBalance = 0; 
         let currentUser = null;
 
-        // 2. Load Ad Boxes with Cooldown
         function loadAds() {
             const grid = document.getElementById('adGrid');
             grid.innerHTML = ""; 
-            
             const now = Date.now();
             const cooldowns = JSON.parse(localStorage.getItem('watch_ads_cooldown')) || {};
 
             for (let i = 1; i <= 200; i++) {
-                // Check if hidden for 1 hour
                 if (cooldowns[i] && now < cooldowns[i]) continue;
-
                 const box = document.createElement('div');
                 box.className = 'reward-item';
                 box.id = `ad-${i}`;
@@ -111,23 +102,14 @@
                 `;
                 grid.appendChild(box);
             }
-            
-            const total = grid.children.length;
-            document.getElementById('systemStatus').innerText = `${total} New Ads Available Now`;
+            document.getElementById('systemStatus').innerText = `${grid.children.length} Ads Available`;
         }
 
-        // 3. User Sync
         async function syncUser() {
             const { data: { user } } = await _supabase.auth.getUser();
             if (!user) { window.location.href = "login.html"; return; }
             currentUser = user;
-
-            const { data } = await _supabase
-                .from('profiles')
-                .select('balance')
-                .eq('id', user.id)
-                .maybeSingle();
-
+            const { data } = await _supabase.from('profiles').select('balance').eq('id', user.id).maybeSingle();
             currentBalance = data ? (data.balance || 0) : 0;
             refreshUI();
         }
@@ -137,48 +119,36 @@
             document.getElementById('dollarAmount').innerText = (currentBalance / 1000).toFixed(3);
         }
 
-        // 4. Ad Process Logic
         async function processAd(adId) {
             if (!currentUser) return;
-
             const overlay = document.getElementById('adOverlay');
             overlay.style.display = 'flex';
 
-            // Open Monetag Link
+            // Monetag लिङ्क खोल्ने
             window.open(MONETAG_LINK, '_blank');
 
-            // 5 Second Watch Validation
             setTimeout(async () => {
                 const updatedBalance = currentBalance + REWARD_PER_AD;
-
-                const { error } = await _supabase
-                    .from('profiles')
-                    .upsert({ 
-                        id: currentUser.id, 
-                        balance: updatedBalance, 
-                        updated_at: new Date() 
-                    });
+                const { error } = await _supabase.from('profiles').upsert({ 
+                    id: currentUser.id, 
+                    balance: updatedBalance, 
+                    updated_at: new Date() 
+                });
 
                 if (!error) {
                     currentBalance = updatedBalance;
                     refreshUI();
-
-                    // Set 1-hour cooldown
                     const cooldowns = JSON.parse(localStorage.getItem('watch_ads_cooldown')) || {};
                     cooldowns[adId] = Date.now() + ONE_HOUR;
                     localStorage.setItem('watch_ads_cooldown', JSON.stringify(cooldowns));
-
-                    // Remove box from UI immediately
                     const box = document.getElementById(`ad-${adId}`);
                     if (box) box.remove();
-
+                    
                     Swal.fire({
-                        title: 'Reward Claimed!',
-                        text: `+${REWARD_PER_AD} Coins added to your wallet.`,
+                        title: 'Success!',
+                        text: '+10 Coins Received',
                         icon: 'success',
-                        toast: true,
-                        position: 'top',
-                        timer: 2500,
+                        timer: 2000,
                         showConfirmButton: false,
                         background: '#1a1a1a',
                         color: '#fff'
@@ -188,11 +158,9 @@
             }, 5000); 
         }
 
-        // Initialize
         window.onload = () => {
             syncUser();
             loadAds();
-            // Refresh grid every minute to show ready ads
             setInterval(loadAds, 60000);
         };
     </script>
